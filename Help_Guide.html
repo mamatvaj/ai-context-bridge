@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Context Bridge — Help Guide</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0f1623;
+    --bg2:      #141c2b;
+    --surface:  #1a2235;
+    --surface2: #1e2840;
+    --border:   rgba(255,255,255,0.08);
+    --border2:  rgba(255,255,255,0.12);
+    --accent:   #00c6a2;
+    --accent2:  #5b8dee;
+    --text:     #e8edf5;
+    --text-mid: #9aa3b8;
+    --text-dim: #5a6480;
+    --green:    #22c55e;
+    --amber:    #f59e0b;
+    --red:      #f04e6a;
+    --mono:     'SF Mono','Fira Code','Cascadia Code',monospace;
+    --ui:       -apple-system,'Segoe UI',system-ui,sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--ui);
+    font-size: 14px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* ── Layout ── */
+  .shell { display: flex; min-height: 100vh; }
+
+  nav {
+    width: 260px; flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    position: sticky; top: 0; height: 100vh;
+    overflow-y: auto; padding: 0 0 32px;
+  }
+
+  .nav-brand {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0;
+    background: var(--bg2); z-index: 10;
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
+  }
+
+  .nav-logo-icon {
+    width: 30px; height: 30px; border-radius: 7px;
+    background: linear-gradient(135deg, #00c6a2, #5b8dee);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .nav-logo-icon svg { width: 16px; height: 16px; }
+
+  .nav-title { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+  .nav-version { font-size: 9px; color: var(--text-dim); font-family: var(--mono); }
+
+  .nav-section-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+    font-family: var(--mono); padding: 18px 20px 6px;
+  }
+
+  nav a {
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 20px; color: var(--text-mid); text-decoration: none;
+    font-size: 12.5px; font-weight: 500;
+    transition: color 0.15s, background 0.15s;
+    border-radius: 0;
+  }
+
+  nav a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  nav a.active { color: var(--accent); background: rgba(0,198,162,0.07); }
+
+  nav a .nav-icon { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+
+  main {
+    flex: 1; max-width: 860px; padding: 48px 56px;
+    overflow-y: auto;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    margin-bottom: 52px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0,198,162,0.1); border: 1px solid rgba(0,198,162,0.25);
+    border-radius: 999px; padding: 4px 12px; margin-bottom: 18px;
+    font-size: 11px; font-weight: 600; color: var(--accent);
+    font-family: var(--mono); letter-spacing: 0.05em;
+  }
+
+  .hero-badge-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+
+  h1 {
+    font-size: 36px; font-weight: 800; letter-spacing: -0.03em;
+    line-height: 1.1; margin-bottom: 14px;
+    background: linear-gradient(135deg, #e8edf5 40%, #00c6a2);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 15px; color: var(--text-mid); line-height: 1.6; max-width: 580px;
+    margin-bottom: 28px;
+  }
+
+  .platform-chips {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+
+  .platform-chip {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 8px; padding: 6px 12px;
+    font-size: 12px; font-weight: 600; color: var(--text-mid);
+  }
+
+  /* ── Sections ── */
+  section { margin-bottom: 56px; scroll-margin-top: 32px; }
+
+  h2 {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+    margin-bottom: 20px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  h2 .h2-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--surface2); display: flex;
+    align-items: center; justify-content: center; font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  h3 {
+    font-size: 15px; font-weight: 700; color: var(--text);
+    margin: 28px 0 10px; letter-spacing: -0.01em;
+  }
+
+  p { color: var(--text-mid); margin-bottom: 12px; }
+
+  strong { color: var(--text); font-weight: 600; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 12px; padding: 20px 22px; margin-bottom: 14px;
+  }
+
+  .card-title {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+  }
+
+  .card-title .card-icon { font-size: 16px; }
+
+  .card p { margin-bottom: 0; font-size: 13px; }
+
+  /* ── Feature grid ── */
+  .feature-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;
+  }
+
+  .feature-card {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 10px; padding: 16px;
+  }
+
+  .feature-card-title {
+    font-size: 12px; font-weight: 700; color: var(--text);
+    margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+  }
+
+  .feature-card p { font-size: 12px; margin-bottom: 0; }
+
+  /* ── Steps ── */
+  .steps { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+  .steps li {
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+
+  .step-num {
+    width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(0,198,162,0.2), rgba(91,141,238,0.2));
+    border: 1px solid rgba(0,198,162,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    font-family: var(--mono); margin-top: 1px;
+  }
+
+  .step-content { flex: 1; font-size: 13px; color: var(--text-mid); }
+  .step-content strong { color: var(--text); }
+
+  /* ── Tip/Warning/Info boxes ── */
+  .tip-box, .warn-box, .info-box {
+    display: flex; align-items: flex-start; gap: 10px;
+    border-radius: 10px; padding: 14px 16px; margin: 16px 0;
+    font-size: 13px; line-height: 1.55;
+  }
+
+  .tip-box {
+    background: rgba(0,198,162,0.07);
+    border: 1px solid rgba(0,198,162,0.2);
+    color: #7dd9c8;
+  }
+
+  .warn-box {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.2);
+    color: #fbbf24;
+  }
+
+  .info-box {
+    background: rgba(91,141,238,0.07);
+    border: 1px solid rgba(91,141,238,0.2);
+    color: #8aa8f0;
+  }
+
+  .tip-box .box-icon, .warn-box .box-icon, .info-box .box-icon {
+    font-size: 16px; flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ── Code / shortcut ── */
+  code {
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: 5px; padding: 2px 7px;
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+  }
+
+  .shortcut {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--mono); font-size: 11px;
+  }
+
+  .key {
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: 5px; padding: 2px 7px; color: var(--text-mid);
+    font-size: 11px;
+  }
+
+  /* ── Table ── */
+  table {
+    width: 100%; border-collapse: collapse; margin: 16px 0;
+    font-size: 13px;
+  }
+
+  th {
+    text-align: left; padding: 9px 14px;
+    background: var(--surface2); color: var(--text-mid);
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; font-family: var(--mono);
+    border-bottom: 1px solid var(--border2);
+  }
+
+  th:first-child { border-radius: 8px 0 0 0; }
+  th:last-child  { border-radius: 0 8px 0 0; }
+
+  td {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    color: var(--text-mid); vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  td strong { color: var(--text); }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    font-family: var(--mono); padding: 2px 7px; border-radius: 999px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  .badge-green { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .badge-amber { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+  .badge-blue  { background: rgba(91,141,238,0.15); color: #8aa8f0;     border: 1px solid rgba(91,141,238,0.25); }
+
+  /* ── Platform colors ── */
+  .claude  { color: #c96a2a; }
+  .chatgpt { color: #10a37f; }
+  .gemini  { color: #4285f4; }
+  .meta    { color: #0082fb; }
+  .grok    { color: #d1d5db; }
+
+  /* ── Divider ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* ── Footer ── */
+  footer {
+    margin-top: 64px; padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--text-dim);
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+
+  @media (max-width: 900px) {
+    nav { display: none; }
+    main { padding: 28px 24px; }
+    .feature-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ── Sidebar Navigation ── -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg>
+      </div>
+      <div>
+        <div class="nav-title">AI Context Bridge</div>
+        <div class="nav-version">v1.0.0 [22.04.2025]</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-section-label">Getting Started</div>
+  <a href="#overview"><span class="nav-icon">🗺️</span> Overview</a>
+  <a href="#installation"><span class="nav-icon">📦</span> Installation</a>
+  <a href="#quickstart"><span class="nav-icon">⚡</span> Quick Start</a>
+
+  <div class="nav-section-label">Features</div>
+  <a href="#floating-widget"><span class="nav-icon">🪄</span> Floating Widget</a>
+  <a href="#selection-tooltip"><span class="nav-icon">💬</span> Selection Tooltip</a>
+  <a href="#right-click"><span class="nav-icon">🖱️</span> Right-Click Menu</a>
+  <a href="#platform-select"><span class="nav-icon">🎯</span> Platform Selection</a>
+  <a href="#actions"><span class="nav-icon">🔧</span> Built-in Actions</a>
+  <a href="#custom-prompts"><span class="nav-icon">✨</span> Custom Prompts</a>
+  <a href="#full-page"><span class="nav-icon">📄</span> Full Page Mode</a>
+  <a href="#auto-submit"><span class="nav-icon">🚀</span> Auto-Submit</a>
+
+  <div class="nav-section-label">Settings</div>
+  <a href="#popup-settings"><span class="nav-icon">⚙️</span> Extension Popup</a>
+  <a href="#behaviour"><span class="nav-icon">🎛️</span> Behaviour Settings</a>
+
+  <div class="nav-section-label">Reference</div>
+  <a href="#platforms"><span class="nav-icon">🌐</span> Supported Platforms</a>
+  <a href="#limits"><span class="nav-icon">📏</span> Limits &amp; Constraints</a>
+  <a href="#troubleshooting"><span class="nav-icon">🔍</span> Troubleshooting</a>
+  <a href="#faq"><span class="nav-icon">❓</span> FAQ</a>
+</nav>
+
+<!-- ── Main Content ── -->
+<main>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge"><div class="hero-badge-dot"></div> Help Guide v1.0.0</div>
+    <h1>AI Context Bridge</h1>
+    <p class="hero-sub">
+      Send any selected text or full webpage content directly into the world's top AI chatbots — no copy-pasting, no API keys, no account linking required. Works on every website.
+    </p>
+    <div class="platform-chips">
+      <div class="platform-chip">🟠 Claude</div>
+      <div class="platform-chip">🟢 ChatGPT</div>
+      <div class="platform-chip">⚡ Grok</div>
+    </div>
+  </div>
+
+  <!-- ── Overview ── -->
+  <section id="overview">
+    <h2><div class="h2-icon">🗺️</div> Overview</h2>
+    <p>
+      <strong>AI Context Bridge</strong> is a Chrome extension that acts as a bridge between any webpage and your favourite AI assistant. Instead of manually copying text, switching tabs, and pasting — the extension does it all with a single click.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-card-title"><span>🪄</span> Floating Widget</div>
+        <p>A draggable panel that appears on every page. Select text to trigger it, or click the FAB button in the corner.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-title"><span>💬</span> Selection Tooltip</div>
+        <p>A mini action bar pops up instantly above highlighted text — click Explain or Summarize without opening the full panel.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-title"><span>🖱️</span> Right-Click Menu</div>
+        <p>Highlight text, right-click, and choose an AI action from the browser context menu.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-title"><span>✨</span> Custom Prompts</div>
+        <p>Create up to 10 reusable prompt templates. They appear everywhere — widget, tooltip, and right-click menu.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-title"><span>📄</span> Full Page Mode</div>
+        <p>Capture the entire page's text content, not just a selection — useful for summarising articles.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-title"><span>🚀</span> Auto-Submit</div>
+        <p>Optionally have the extension click Send automatically after injecting your prompt into the AI platform.</p>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <span class="box-icon">ℹ️</span>
+      <span><strong>No API keys needed.</strong> The extension opens the AI platform's website in a new tab and types your prompt into the text box — exactly as if you did it yourself.</span>
+    </div>
+  </section>
+
+  <!-- ── Installation ── -->
+  <section id="installation">
+    <h2><div class="h2-icon">📦</div> Installation</h2>
+
+    <h3>Load as Unpacked Extension (Developer Mode)</h3>
+    <p>Because this extension is distributed as a ZIP file, you install it in Chrome's developer mode:</p>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content"><strong>Download & unzip</strong> the <code>ai-context-bridge.zip</code> file to a permanent folder on your computer (e.g. <code>C:\Extensions\ai-context-bridge</code> or <code>~/Extensions/ai-context-bridge</code>). Do not delete this folder after installing.</div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content"><strong>Open Chrome</strong> and navigate to <code>chrome://extensions</code></div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content"><strong>Enable Developer Mode</strong> by toggling the switch in the top-right corner of the extensions page.</div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content"><strong>Click "Load unpacked"</strong> and select the <code>ai-context-bridge</code> folder (the one containing <code>manifest.json</code>).</div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-content"><strong>Pin the extension</strong> by clicking the puzzle-piece icon in the Chrome toolbar → find "AI Context Bridge" → click the pin icon.</div>
+      </li>
+    </ol>
+
+    <div class="warn-box">
+      <span class="box-icon">⚠️</span>
+      <span><strong>Keep the folder.</strong> Chrome loads the extension directly from the folder. Moving or deleting it will break the extension. You will need to reload it from the new location.</span>
+    </div>
+
+    <h3>Verifying Installation</h3>
+    <p>Open any webpage (e.g. a news article). You should see a teal/blue circular FAB button in the bottom-right corner. If you don't see it, make sure "Floating Widget" is enabled in the extension popup.</p>
+  </section>
+
+  <!-- ── Quick Start ── -->
+  <section id="quickstart">
+    <h2><div class="h2-icon">⚡</div> Quick Start</h2>
+    <p>Get up and running in under 60 seconds:</p>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content"><strong>Go to any article or webpage</strong> — for example a news article, blog post, or Wikipedia page.</div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content"><strong>Select some text</strong> with your mouse. A mini tooltip appears above the selection with "💡 Explain" and "📝 Summarize" buttons.</div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content"><strong>Click "💡 Explain"</strong>. The extension opens your default AI platform (Claude by default) in a new tab with the prompt pre-filled.</div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content"><strong>Hit Send</strong> in the AI chat and get your answer. That's it.</div>
+      </li>
+    </ol>
+
+    <div class="tip-box">
+      <span class="box-icon">💡</span>
+      <span><strong>Tip:</strong> Click the extension icon in the toolbar to change your default AI platform. Your choice is saved automatically — no Save button needed.</span>
+    </div>
+  </section>
+
+  <!-- ── Floating Widget ── -->
+  <section id="floating-widget">
+    <h2><div class="h2-icon">🪄</div> Floating Widget</h2>
+    <p>The floating widget is a draggable panel that lives on every webpage. It is your main control centre for sending content to AI platforms.</p>
+
+    <h3>Opening the Widget</h3>
+    <p>There are two ways to open it:</p>
+    <ul class="steps">
+      <li><div class="step-num">A</div><div class="step-content"><strong>Click the FAB</strong> — the circular gradient button in the bottom-right corner of any page.</div></li>
+      <li><div class="step-num">B</div><div class="step-content"><strong>Click "⚡ More…"</strong> in the selection tooltip that appears when you highlight text.</div></li>
+    </ul>
+
+    <h3>Widget Anatomy</h3>
+    <table>
+      <tr><th>Element</th><th>What it does</th></tr>
+      <tr><td><strong>Header bar</strong></td><td>Displays the app name and current status (READY / ⟳ Opening / ✓ Sent). Drag from this bar to reposition the panel anywhere on screen.</td></tr>
+      <tr><td><strong>Creator bar</strong></td><td>Version info and author credit with a link to the blog.</td></tr>
+      <tr><td><strong>Full Page / Selected Text toggle</strong></td><td>Switches the content source. "Selected Text" uses the highlighted text; "Full Page" captures the entire visible text of the page.</td></tr>
+      <tr><td><strong>Preview box</strong></td><td>Shows a 200-character preview of the text that will be sent. Updates live as you switch modes or change your selection.</td></tr>
+      <tr><td><strong>Target Platform dropdown</strong></td><td>Choose which AI to send to for this specific action. Defaults to your saved preference.</td></tr>
+      <tr><td><strong>Action buttons</strong></td><td>💡 Explain · 📝 Summarize · ✏️ Custom Ask — described in detail in the Actions section below.</td></tr>
+      <tr><td><strong>My Prompts section</strong></td><td>Appears when you have saved custom prompt templates. Shows one pill per template — click to send.</td></tr>
+      <tr><td><strong>× Close button</strong></td><td>Closes the panel. The FAB remains visible.</td></tr>
+    </table>
+
+    <h3>Dragging & Repositioning</h3>
+    <p>Click and hold the header bar and drag the panel anywhere on screen. The FAB button is also draggable — click and drag it to move it to a different corner. Positions are remembered within the session.</p>
+
+    <div class="tip-box">
+      <span class="box-icon">💡</span>
+      <span>The widget uses Shadow DOM isolation — it cannot be broken or hidden by the host page's CSS, even on heavily styled sites.</span>
+    </div>
+  </section>
+
+  <!-- ── Selection Tooltip ── -->
+  <section id="selection-tooltip">
+    <h2><div class="h2-icon">💬</div> Selection Tooltip</h2>
+    <p>The selection tooltip is the fastest way to act on highlighted text without ever opening the full panel.</p>
+
+    <h3>How to Use</h3>
+    <ol class="steps">
+      <li><div class="step-num">1</div><div class="step-content">Select any text on a webpage by clicking and dragging.</div></li>
+      <li><div class="step-num">2</div><div class="step-content">A compact pill-shaped bar appears just above your selection after a short delay (~120ms).</div></li>
+      <li><div class="step-num">3</div><div class="step-content">Click one of the quick actions: <strong>💡 Explain</strong>, <strong>📝 Summarize</strong>, or <strong>⚡ More…</strong></div></li>
+    </ol>
+
+    <table>
+      <tr><th>Button</th><th>Action</th></tr>
+      <tr><td><strong>💡 Explain</strong></td><td>Sends the selected text to your default AI with an "Explain this clearly" prompt</td></tr>
+      <tr><td><strong>📝 Summarize</strong></td><td>Sends the selected text with a "Simplify and summarize" prompt</td></tr>
+      <tr><td><strong>⚡ More…</strong></td><td>Opens the full floating widget panel for more options (custom ask, platform change, full page mode)</td></tr>
+    </table>
+
+    <h3>Enabling / Disabling</h3>
+    <p>The tooltip can be turned off in the extension popup under <strong>Behaviour → Selection Tooltip</strong>. This is useful if you find it intrusive on certain sites where text selection is part of the UI.</p>
+
+    <div class="warn-box">
+      <span class="box-icon">⚠️</span>
+      <span>The tooltip does not appear on AI platform pages themselves (Claude, ChatGPT, Grok) since the extension does not run there.</span>
+    </div>
+  </section>
+
+  <!-- ── Right-Click Menu ── -->
+  <section id="right-click">
+    <h2><div class="h2-icon">🖱️</div> Right-Click Context Menu</h2>
+    <p>For users who prefer keyboard-and-mouse workflows, the context menu provides quick access to all AI actions without needing the floating widget.</p>
+
+    <h3>How to Use</h3>
+    <ol class="steps">
+      <li><div class="step-num">1</div><div class="step-content">Select any text on a webpage.</div></li>
+      <li><div class="step-num">2</div><div class="step-content">Right-click anywhere on the page.</div></li>
+      <li><div class="step-num">3</div><div class="step-content">Hover over <strong>"AI Context Bridge"</strong> in the context menu.</div></li>
+      <li><div class="step-num">4</div><div class="step-content">Choose an action from the submenu. The AI platform opens in a new tab with your prompt pre-filled.</div></li>
+    </ol>
+
+    <h3>Context Menu Structure</h3>
+    <div class="card">
+      <div class="card-title"><span class="card-icon">🖱️</span> AI Context Bridge (submenu)</div>
+      <table>
+        <tr><th>Item</th><th>Description</th></tr>
+        <tr><td><strong>💡 Explain This</strong></td><td>Sends selected text with an explain prompt to your default AI platform</td></tr>
+        <tr><td><strong>📝 Summarize</strong></td><td>Sends selected text with a summarize prompt</td></tr>
+        <tr><td><strong>✏️ Custom Ask…</strong></td><td>Sends the raw selected text — use this for pasting your own question</td></tr>
+        <tr><td><em>── separator ──</em></td><td>Appears only when you have saved custom prompts</td></tr>
+        <tr><td><strong>[Your Custom Prompts]</strong></td><td>One entry per saved template — selecting it applies that template to the selected text</td></tr>
+      </table>
+    </div>
+
+    <div class="info-box">
+      <span class="box-icon">ℹ️</span>
+      <span>The right-click menu always uses your <strong>default AI platform</strong> from settings. To send to a different platform, use the floating widget instead.</span>
+    </div>
+  </section>
+
+  <!-- ── Platform Selection ── -->
+  <section id="platform-select">
+    <h2><div class="h2-icon">🎯</div> Platform Selection</h2>
+    <p>AI Context Bridge supports five AI platforms. You can choose which platform to send to at two levels:</p>
+
+    <h3>Default Platform (Popup Settings)</h3>
+    <p>The default platform is used by the right-click menu and as the pre-selected option in the floating widget. Change it in the extension popup by clicking one of the five platform cards. Changes are saved immediately.</p>
+
+    <h3>Per-Action Override (Floating Widget)</h3>
+    <p>Inside the floating widget, use the <strong>Target Platform</strong> dropdown to send this specific action to a different platform without changing your saved default.</p>
+
+    <table>
+      <tr><th>Platform</th><th>URL opened</th><th>Notes</th></tr>
+      <tr><td><strong class="claude">Claude</strong></td><td><code>claude.ai/new</code></td><td>Opens a new conversation. Requires a free Claude.ai account.</td></tr>
+      <tr><td><strong class="chatgpt">ChatGPT</strong></td><td><code>chatgpt.com/</code></td><td>Opens the ChatGPT home page. Requires a free OpenAI account.</td></tr>
+      <tr><td><em style="opacity:0.5">🔵 Gemini</em></td><td><em style="opacity:0.5">Temporarily unavailable</em></td><td><em style="opacity:0.5">Hidden from UI due to injection instability. Code preserved for future re-enable.</em></td></tr>
+      <tr><td><em style="opacity:0.5">🔷 Meta AI</em></td><td><em style="opacity:0.5">Temporarily unavailable</em></td><td><em style="opacity:0.5">Hidden from UI due to injection instability. Code preserved for future re-enable.</em></td></tr>
+      <tr><td><strong class="grok">Grok</strong></td><td><code>grok.com/</code></td><td>Opens Grok. Requires an X/Twitter account.</td></tr>
+    </table>
+
+    <div class="warn-box">
+      <span class="box-icon">⚠️</span>
+      <span>You must be <strong>already logged in</strong> to the target AI platform in your browser for the injection to work. The extension does not handle login.</span>
+    </div>
+  </section>
+
+  <!-- ── Actions ── -->
+  <section id="actions">
+    <h2><div class="h2-icon">🔧</div> Built-in Actions</h2>
+    <p>Three actions are always available in every entry point (widget, tooltip, right-click menu):</p>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">💡</span> Explain</div>
+      <p>Wraps the selected text in: <em>"Please explain the following [selected text / full page content] clearly and concisely:"</em> then appends the text. Best for: definitions, technical concepts, passages in a foreign language.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">📝</span> Summarize</div>
+      <p>Wraps the text in: <em>"Please simplify and summarize the following [selected text / full page content]:"</em> then appends the text. Best for: long articles, reports, meeting notes.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">✏️</span> Custom Ask</div>
+      <p>In the widget: clicking this button opens a small textarea above the action buttons. Type your own instruction (e.g. "Translate this to French"), then click <strong>🚀 Send</strong>. Your instruction is placed before the selected text like: <em>"[Your instruction]\n\nContext:\n[selected text]"</em>.</p>
+      <p style="margin-top:8px">In the right-click menu: sends the raw selected text without any prefix — useful when you want to paste it into an ongoing conversation manually.</p>
+    </div>
+
+    <div class="tip-box">
+      <span class="box-icon">💡</span>
+      <span>With <strong>Full Page Mode</strong> active, all three actions use the full page text instead of any selection. The prompt prefix still changes based on which button you click.</span>
+    </div>
+  </section>
+
+  <!-- ── Custom Prompts ── -->
+  <section id="custom-prompts">
+    <h2><div class="h2-icon">✨</div> Custom Prompt Templates</h2>
+    <p>Save your frequently-used AI instructions as reusable templates. Once created, they appear in the floating widget ("My Prompts" section), the right-click context menu, and are accessible from any page.</p>
+
+    <h3>Creating a Custom Prompt</h3>
+    <ol class="steps">
+      <li><div class="step-num">1</div><div class="step-content">Click the extension icon to open the popup.</div></li>
+      <li><div class="step-num">2</div><div class="step-content">Scroll to <strong>Prompt Templates</strong> at the bottom.</div></li>
+      <li><div class="step-num">3</div><div class="step-content">Click the green <strong>+</strong> button to the right of the section title.</div></li>
+      <li><div class="step-num">4</div><div class="step-content">Fill in the <strong>Template Name</strong> — this is what appears in menus and buttons. Supports emoji + text (e.g. "🎯 Rewrite Formally"). Maximum 40 characters.</div></li>
+      <li><div class="step-num">5</div><div class="step-content">Fill in the <strong>Prompt Template</strong> — the instruction sent to the AI. Maximum 500 characters. Your selected text is appended automatically after this prompt.</div></li>
+      <li><div class="step-num">6</div><div class="step-content">Click <strong>Save Template</strong>. The prompt is immediately available everywhere.</div></li>
+    </ol>
+
+    <h3>How Custom Prompts Work</h3>
+    <p>When you trigger a custom prompt, the extension sends:</p>
+    <div class="card">
+      <code style="font-size:12px; background:transparent; border:none; padding:0; color: var(--text-mid);">
+        [Your Prompt Template]<br><br>[Selected text or full page content]
+      </code>
+    </div>
+    <p>Example: if your template is <em>"Translate the following to Hindi:"</em> and you select "Hello, how are you?", the AI receives: <em>"Translate the following to Hindi:\n\nHello, how are you?"</em></p>
+
+    <h3>Deleting a Custom Prompt</h3>
+    <p>In the popup, each custom prompt chip has a small <strong>×</strong> button. Clicking it removes the template immediately from all locations (widget, right-click menu).</p>
+
+    <h3>Limits</h3>
+    <table>
+      <tr><th>Limit</th><th>Value</th></tr>
+      <tr><td>Maximum custom prompts</td><td><span class="badge badge-amber">10</span></td></tr>
+      <tr><td>Maximum template name length</td><td><span class="badge badge-blue">40 characters</span></td></tr>
+      <tr><td>Maximum prompt body length</td><td><span class="badge badge-blue">500 characters</span></td></tr>
+    </table>
+
+    <div class="tip-box">
+      <span class="box-icon">💡</span>
+      <span>Use emojis in your template names — they make prompts easy to recognise at a glance in the widget and right-click menu.</span>
+    </div>
+
+    <h3>Example Custom Prompts</h3>
+    <table>
+      <tr><th>Name</th><th>Prompt Template</th><th>Use case</th></tr>
+      <tr><td>🌐 Translate to Hindi</td><td>Translate the following text to Hindi. Keep it natural and fluent:</td><td>Translate articles</td></tr>
+      <tr><td>🎯 Rewrite Formally</td><td>Rewrite the following in a formal, professional tone. Preserve the original meaning:</td><td>Formal writing</td></tr>
+      <tr><td>📧 Write Email</td><td>Write a professional email based on the following draft or points:</td><td>Email drafting</td></tr>
+      <tr><td>🐞 Debug Code</td><td>Find the bugs in the following code and explain how to fix them:</td><td>Code review</td></tr>
+      <tr><td>📊 Key Takeaways</td><td>List the 5 most important key takeaways from the following content as bullet points:</td><td>Research notes</td></tr>
+    </table>
+  </section>
+
+  <!-- ── Full Page Mode ── -->
+  <section id="full-page">
+    <h2><div class="h2-icon">📄</div> Full Page Mode</h2>
+    <p>Instead of sending highlighted text, Full Page Mode captures the entire visible text of the current webpage and sends that to the AI platform.</p>
+
+    <h3>Enabling Full Page Mode</h3>
+    <p>In the floating widget, click the <strong>"Full Page"</strong> button in the segmented toggle at the top of the panel. The toggle highlights to show it is active. The preview box updates to show the first 200 characters of the page content.</p>
+
+    <h3>When to Use Full Page Mode</h3>
+    <table>
+      <tr><th>Scenario</th><th>Use case</th></tr>
+      <tr><td>Summarise an article</td><td>Enable Full Page + Summarize to get a summary of the entire page</td></tr>
+      <tr><td>Extract key facts</td><td>Enable Full Page + Custom Prompt → "List the 5 key facts from this page"</td></tr>
+      <tr><td>Translate a page</td><td>Enable Full Page + Custom Prompt → "Translate this to [language]"</td></tr>
+      <tr><td>Analyse a report</td><td>Enable Full Page + Explain for a breakdown of a complex document</td></tr>
+    </table>
+
+    <div class="warn-box">
+      <span class="box-icon">⚠️</span>
+      <span><strong>Character limit:</strong> Full Page content is capped at <strong>50,000 characters</strong> to avoid hitting AI platform input limits. Very long pages are truncated at this point.</span>
+    </div>
+
+    <div class="info-box">
+      <span class="box-icon">ℹ️</span>
+      <span>Full Page Mode captures <code>document.body.innerText</code> — this is the human-readable text of the page, excluding HTML tags, scripts, and hidden elements.</span>
+    </div>
+  </section>
+
+  <!-- ── Auto Submit ── -->
+  <section id="auto-submit">
+    <h2><div class="h2-icon">🚀</div> Auto-Submit</h2>
+    <p>When enabled, the extension not only types your prompt into the AI platform's text box — it also clicks the Send button automatically, so the AI starts responding immediately.</p>
+
+    <h3>Enabling Auto-Submit</h3>
+    <p>Open the extension popup → <strong>Behaviour → Auto-Submit</strong> toggle. The setting is saved immediately.</p>
+
+    <h3>How It Works Per Platform</h3>
+    <table>
+      <tr><th>Platform</th><th>Submit method</th></tr>
+      <tr><td><strong class="claude">Claude</strong></td><td>Clicks the Send button inside the composer footer</td></tr>
+      <tr><td><strong class="chatgpt">ChatGPT</strong></td><td>Clicks the Send button (<code>data-testid="send-button"</code>)</td></tr>
+      <tr><td><strong class="grok">Grok</strong></td><td>Clicks the Send button or fires a form submit</td></tr>
+    </table>
+
+    <div class="warn-box">
+      <span class="box-icon">⚠️</span>
+      <span>Auto-Submit requires a short delay (800–2000ms depending on platform) for the AI platform's interface to enable the Send button after text is injected. If the platform is slow to load, Auto-Submit may not fire. In that case, press Enter manually.</span>
+    </div>
+  </section>
+
+  <!-- ── Popup Settings ── -->
+  <section id="popup-settings">
+    <h2><div class="h2-icon">⚙️</div> Extension Popup</h2>
+    <p>Click the extension icon in the Chrome toolbar to open the settings popup. All changes save automatically — there is no Save button.</p>
+
+    <h3>Default AI Platform</h3>
+    <p>Click any platform card to set it as your default. The selected card highlights with a teal border. This default is used by the right-click menu and as the pre-selected option in the widget dropdown.</p>
+
+    <h3>Creator Info</h3>
+    <p>The popup header shows the extension version, creation date, and a link to the creator's blog at <a href="https://techwithmamatva.blogspot.com/" target="_blank" style="color:var(--accent)">techwithmamatva.blogspot.com</a>.</p>
+  </section>
+
+  <!-- ── Behaviour Settings ── -->
+  <section id="behaviour">
+    <h2><div class="h2-icon">🎛️</div> Behaviour Settings</h2>
+
+    <table>
+      <tr><th>Setting</th><th>Default</th><th>Description</th></tr>
+      <tr>
+        <td><strong>Floating Widget</strong></td>
+        <td><span class="badge badge-green">ON</span></td>
+        <td>Shows/hides the draggable FAB button and panel on all pages. Turn off if you prefer to use only the right-click menu.</td>
+      </tr>
+      <tr>
+        <td><strong>Selection Tooltip</strong></td>
+        <td><span class="badge badge-green">ON</span></td>
+        <td>Shows/hides the mini action bar that appears above highlighted text. Turn off for a less intrusive experience.</td>
+      </tr>
+      <tr>
+        <td><strong>Auto-Submit</strong></td>
+        <td><span class="badge badge-amber">OFF</span></td>
+        <td>When on, automatically clicks Send after injecting the prompt. When off, the prompt is typed but you press Send manually — giving you a chance to review before sending.</td>
+      </tr>
+    </table>
+
+    <div class="tip-box">
+      <span class="box-icon">💡</span>
+      <span>Changes to all behaviour settings take effect <strong>immediately</strong> on all currently open tabs — no refresh required.</span>
+    </div>
+  </section>
+
+  <!-- ── Platforms ── -->
+  <section id="platforms">
+    <h2><div class="h2-icon">🌐</div> Supported Platforms — Details</h2>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">🟠</span> <span class="claude">Claude (claude.ai)</span></div>
+      <p><strong>Account required:</strong> Free Anthropic account &nbsp;|&nbsp; <strong>Opens:</strong> New conversation at <code>claude.ai/new</code><br>
+      <strong>Injection:</strong> Uses <code>execCommand("insertText")</code> on the ProseMirror contenteditable editor. Highly reliable.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">🟢</span> <span class="chatgpt">ChatGPT (chatgpt.com)</span></div>
+      <p><strong>Account required:</strong> Free OpenAI account &nbsp;|&nbsp; <strong>Opens:</strong> <code>chatgpt.com/</code><br>
+      <strong>Injection:</strong> Uses React's native prototype value setter to bypass synthetic event system.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">🔵</span> <span style="opacity:0.5">Gemini — Temporarily Unavailable</span></div>
+      <p style="opacity:0.6">Gemini is currently hidden from the UI due to injection instability. The injector code is preserved in <code>injectors/gemini.js</code> and can be re-enabled once platform selectors are updated.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">🔷</span> <span style="opacity:0.5">Meta AI — Temporarily Unavailable</span></div>
+      <p style="opacity:0.6">Meta AI is currently hidden from the UI due to injection instability. The injector code is preserved in <code>injectors/meta.js</code> and can be re-enabled once platform selectors are updated.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">⚡</span> <span class="grok">Grok (grok.com)</span></div>
+      <p><strong>Account required:</strong> X/Twitter account &nbsp;|&nbsp; <strong>Opens:</strong> <code>grok.com/</code><br>
+      <strong>Injection:</strong> Handles both textarea and contenteditable variants depending on Grok's current UI version.</p>
+    </div>
+  </section>
+
+  <!-- ── Limits ── -->
+  <section id="limits">
+    <h2><div class="h2-icon">📏</div> Limits &amp; Constraints</h2>
+    <table>
+      <tr><th>Item</th><th>Limit</th><th>Notes</th></tr>
+      <tr><td>Selected text max length</td><td>No enforced limit</td><td>Very long selections may exceed the AI platform's own input limit</td></tr>
+      <tr><td>Full Page Mode text cap</td><td>50,000 characters</td><td>Truncated at this point to prevent platform errors</td></tr>
+      <tr><td>Custom prompt templates</td><td>10 max</td><td>The + button is disabled when the limit is reached</td></tr>
+      <tr><td>Custom prompt name</td><td>40 characters</td><td>Supports emoji and any Unicode character</td></tr>
+      <tr><td>Custom prompt body</td><td>500 characters</td><td>Live character counter shown while typing</td></tr>
+      <tr><td>Pending prompt TTL</td><td>15 seconds</td><td>If the AI tab takes longer than 15s to load, the pending prompt is discarded</td></tr>
+      <tr><td>Injection retry attempts</td><td>25–30 attempts</td><td>Each injector retries with backoff if the editor is not yet in DOM</td></tr>
+    </table>
+  </section>
+
+  <!-- ── Troubleshooting ── -->
+  <section id="troubleshooting">
+    <h2><div class="h2-icon">🔍</div> Troubleshooting</h2>
+
+    <h3>FAB button is not visible</h3>
+    <div class="card">
+      <p>1. Open the extension popup and check that <strong>Floating Widget</strong> is toggled ON.<br>
+      2. Refresh the page (the widget injects on page load).<br>
+      3. Check <code>chrome://extensions</code> to ensure the extension is enabled and not showing an error.</p>
+    </div>
+
+    <h3>Text is not being injected into the AI platform</h3>
+    <div class="card">
+      <p>1. <strong>Make sure you are logged in</strong> to the AI platform in your browser.<br>
+      2. The platform may have updated its UI. The extension retries injection 25–30 times with delays — wait up to 5 seconds after the tab opens.<br>
+      3. If using Auto-Submit, try disabling it and pressing Send manually to see if the text injected successfully.<br>
+      4. Try reloading the extension at <code>chrome://extensions</code> and retrying.</p>
+    </div>
+
+    <h3>Only part of the prompt appears (e.g. only the first line)</h3>
+    <div class="card">
+      <p>This was a known issue with Gemini's Quill editor clipboard interceptor. Fixed in v1.0.0 by using <code>execCommand("insertText")</code> instead of ClipboardEvent simulation. If it recurs, try reloading the extension.</p>
+    </div>
+
+    <h3>Meta AI / Gemini not available in platform selector</h3>
+    <div class="card">
+      <p>Gemini and Meta AI have been temporarily removed from the platform selector due to injection instability caused by recent UI changes on those platforms. Their injector code is preserved and will be re-enabled in a future update once selectors are fixed. Use Claude, ChatGPT, or Grok in the meantime.</p>
+    </div>
+
+    <h3>Auto-Submit does not fire</h3>
+    <div class="card">
+      <p>1. The AI platform may be slow to load — the Send button needs to be enabled before Auto-Submit can click it. Allow up to 6 seconds.<br>
+      2. Some platforms disable the Send button until their React/Angular state validates the input. Try typing a character in the input box to trigger validation, then press Enter.<br>
+      3. Try disabling Auto-Submit and sending manually.</p>
+    </div>
+
+    <h3>The widget causes visual issues on a specific site</h3>
+    <div class="card">
+      <p>The widget uses Shadow DOM which should prevent CSS conflicts. If you see issues, try toggling the Floating Widget off for that session from the popup. Please report the URL so it can be investigated.</p>
+    </div>
+
+    <h3>Custom prompts are not showing in the right-click menu</h3>
+    <div class="card">
+      <p>The context menu is rebuilt dynamically when prompts change. If it does not update:<br>
+      1. Wait 2–3 seconds and right-click again.<br>
+      2. Reload the extension at <code>chrome://extensions</code>.<br>
+      3. Ensure <code>chrome.contextMenus</code> permission is granted (it should be by default).</p>
+    </div>
+  </section>
+
+  <!-- ── FAQ ── -->
+  <section id="faq">
+    <h2><div class="h2-icon">❓</div> Frequently Asked Questions</h2>
+
+    <h3>Does this extension send my data anywhere?</h3>
+    <p>No. The extension stores your settings and custom prompts locally in Chrome's <code>chrome.storage.local</code> — they never leave your browser. The only "data" that goes anywhere is what you explicitly send to AI platforms when you use the extension, which goes directly to the AI platform's website in a new tab — exactly as if you typed it yourself.</p>
+
+    <h3>Do I need API keys?</h3>
+    <p>No. The extension uses the AI platforms' standard web interfaces, not their APIs. No accounts, no billing, no keys needed beyond the free account you already have with each platform.</p>
+
+    <h3>Why does the tab open but nothing is typed?</h3>
+    <p>You are most likely not logged in to that AI platform. Log in and try again. The extension cannot proceed past a login wall.</p>
+
+    <h3>Can I use this on any website?</h3>
+    <p>Yes — the extension runs on all websites (<code>&lt;all_urls&gt;</code>). The only exceptions are the AI platform pages themselves (claude.ai, chatgpt.com, etc.) where the extension's widget is intentionally excluded.</p>
+
+    <h3>Can I change the keyboard shortcut?</h3>
+    <p>Currently there is no keyboard shortcut. You can add one via Chrome's extension shortcut settings at <code>chrome://extensions/shortcuts</code>, but this only controls opening the popup. The widget is opened by clicking the FAB or from the selection tooltip.</p>
+
+    <h3>Will the extension break when AI platforms update their UI?</h3>
+    <p>Possibly — the injectors rely on CSS selectors and DOM structure that can change when platforms update. When this happens the text injection or auto-submit may stop working until the extension is updated. Check the creator's blog for updates.</p>
+
+    <h3>What is the maximum number of custom prompts?</h3>
+    <p>10 custom prompt templates maximum. Each name can be up to 40 characters and each prompt body up to 500 characters.</p>
+
+    <h3>How do I uninstall?</h3>
+    <p>Go to <code>chrome://extensions</code>, find "AI Context Bridge", and click <strong>Remove</strong>. All locally stored settings and custom prompts will be deleted.</p>
+  </section>
+
+  <hr>
+
+  <footer>
+    <div>
+      <strong>AI Context Bridge</strong> v1.0.0 [22.04.2025] &nbsp;·&nbsp;
+      Built by <strong>Mamatva</strong>
+    </div>
+    <div>
+      <a href="https://techwithmamatva.blogspot.com/" target="_blank">techwithmamatva.blogspot.com ↗</a>
+    </div>
+  </footer>
+
+</main>
+</div>
+
+<script src="help_guide.js"></script>
+</body>
+</html>

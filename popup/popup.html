@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Context Bridge</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-root">
+
+    <!-- Main view -->
+    <div id="view-main">
+      <header class="popup-header">
+        <div class="header-left">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/>
+            </svg>
+          </div>
+          <div class="header-titles">
+            <span class="app-name">AI Context Bridge</span>
+            <span class="app-version">v1.20 <span class="app-date">[29.03.2026]</span></span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button id="btn-help" title="Open Help Guide" style="
+            background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+            border-radius:50%;width:22px;height:22px;display:flex;align-items:center;
+            justify-content:center;cursor:pointer;padding:0;flex-shrink:0;
+            color:rgba(255,255,255,0.5);font-size:11px;font-weight:700;
+            transition:background 0.15s,color 0.15s;line-height:1;
+          ">?</button>
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            <span class="status-text">Active</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="creator-strip">
+        <span class="creator-label">by <strong>Mamatva</strong></span>
+        <a class="creator-link" href="https://techwithmamatva.blogspot.com/" target="_blank" title="Tech with Mamatva Blog">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          techwithmamatva
+        </a>
+      </div>
+
+      <div class="divider"></div>
+
+      <main class="popup-body">
+
+        <!-- Default AI Platform -->
+        <section class="section">
+          <h3 class="section-title">Default AI Platform</h3>
+          <div class="provider-grid" id="provider-grid"></div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Behaviour -->
+        <section class="section">
+          <h3 class="section-title">Behaviour</h3>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">Floating Widget</span>
+              <span class="setting-desc">Show the FAB button on all pages</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-widget" checked>
+              <div class="toggle-track"></div>
+            </label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">Selection Tooltip</span>
+              <span class="setting-desc">Quick actions on text selection</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-tooltip" checked>
+              <div class="toggle-track"></div>
+            </label>
+          </div>
+          <div class="setting-row last">
+            <div class="setting-info">
+              <span class="setting-label">Auto-Submit</span>
+              <span class="setting-desc">Send message automatically after injection</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-autosubmit">
+              <div class="toggle-track"></div>
+            </label>
+          </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Prompt Templates -->
+        <section class="section">
+          <div class="section-header-row">
+            <h3 class="section-title">Prompt Templates</h3>
+            <button class="add-prompt-btn" id="btn-add-prompt" title="Add custom prompt (max 10)">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                <path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <!-- Built-in chips (always shown) -->
+          <div class="template-list">
+            <div class="template-chip builtin">💡 Explain</div>
+            <div class="template-chip builtin">📝 Summarize</div>
+            <div class="template-chip builtin">✏️ Custom Ask</div>
+          </div>
+          <!-- Custom prompt chips -->
+          <div class="custom-chips" id="custom-chips"></div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- Add / Edit Prompt view -->
+    <div id="view-add-prompt" class="hidden">
+      <header class="add-header">
+        <button class="back-btn" id="btn-back">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="add-title" id="add-prompt-title">New Prompt Template</span>
+      </header>
+
+      <div class="add-body">
+        <div class="add-field">
+          <label class="add-label">
+            Template Name
+            <span class="add-hint">emoji + text, shown in menus</span>
+          </label>
+          <input type="text" id="prompt-name" class="add-input"
+            placeholder="e.g. 🎯 Rewrite Formally" maxlength="40"
+            autocomplete="off" spellcheck="false">
+          <div class="char-count" id="name-count">0 / 40</div>
+        </div>
+
+        <div class="add-field">
+          <label class="add-label">
+            Prompt Template
+            <span class="add-hint">the instruction sent to the AI</span>
+          </label>
+          <textarea id="prompt-body" class="add-textarea"
+            placeholder="e.g. Rewrite the following text in a formal, professional tone. Preserve the original meaning:\n\n"
+            maxlength="500" rows="5"></textarea>
+          <div class="char-count" id="body-count">0 / 500</div>
+        </div>
+
+        <div class="add-info-box">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          Your selected text is appended automatically after the prompt.
+        </div>
+
+        <div class="add-actions">
+          <button class="btn-cancel" id="btn-cancel-prompt">Cancel</button>
+          <button class="btn-save-prompt" id="btn-save-prompt">Save Template</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M2 6l3 3 5-5" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Saved
+    </div>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
