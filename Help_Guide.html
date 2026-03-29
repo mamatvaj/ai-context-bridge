@@ -340,7 +340,7 @@
       </div>
       <div>
         <div class="nav-title">AI Context Bridge</div>
-        <div class="nav-version">v1.0.0 [22.04.2025]</div>
+        <div class="nav-version">v1.20 [29.03.2026]</div>
       </div>
     </div>
   </div>
@@ -376,7 +376,7 @@
 
   <!-- Hero -->
   <div class="hero">
-    <div class="hero-badge"><div class="hero-badge-dot"></div> Help Guide v1.0.0</div>
+    <div class="hero-badge"><div class="hero-badge-dot"></div> Help Guide v1.20</div>
     <h1>AI Context Bridge</h1>
     <p class="hero-sub">
       Send any selected text or full webpage content directly into the world's top AI chatbots — no copy-pasting, no API keys, no account linking required. Works on every website.
@@ -855,7 +855,7 @@
 
     <h3>Only part of the prompt appears (e.g. only the first line)</h3>
     <div class="card">
-      <p>This was a known issue with Gemini's Quill editor clipboard interceptor. Fixed in v1.0.0 by using <code>execCommand("insertText")</code> instead of ClipboardEvent simulation. If it recurs, try reloading the extension.</p>
+      <p>This was a known issue with Gemini's Quill editor clipboard interceptor. Fixed in v1.20 by using <code>execCommand("insertText")</code> instead of ClipboardEvent simulation. If it recurs, try reloading the extension.</p>
     </div>
 
     <h3>Meta AI / Gemini not available in platform selector</h3>
@@ -917,7 +917,7 @@
 
   <footer>
     <div>
-      <strong>AI Context Bridge</strong> v1.0.0 [22.04.2025] &nbsp;·&nbsp;
+      <strong>AI Context Bridge</strong> v1.20 [29.03.2026] &nbsp;·&nbsp;
       Built by <strong>Mamatva</strong>
     </div>
     <div>
@@ -928,6 +928,22 @@
 </main>
 </div>
 
-<script src="help_guide.js"></script>
+<script>
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('section[id], div[id="overview"]');
+  const navLinks  = document.querySelectorAll('nav a');
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => obs.observe(s));
+</script>
 </body>
 </html>

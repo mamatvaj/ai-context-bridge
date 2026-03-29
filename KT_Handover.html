@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Context Bridge — KT & Handover Document</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:       #0c1220;
+  --bg2:      #101829;
+  --surface:  #141f33;
+  --surface2: #192540;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+  --accent:   #00c6a2;
+  --accent2:  #5b8dee;
+  --text:     #e8edf5;
+  --text-mid: #9aa3b8;
+  --text-dim: #55627a;
+  --green:    #22c55e;
+  --amber:    #f59e0b;
+  --red:      #f04e6a;
+  --purple:   #a78bfa;
+  --mono:     'DM Mono', monospace;
+  --display:  'Syne', sans-serif;
+  --body:     'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,198,162,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,198,162,0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none; z-index: 0;
+}
+
+.layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 270px; flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh;
+  overflow-y: auto; padding: 24px 0;
+  display: flex; flex-direction: column;
+}
+
+.sidebar-brand { padding: 0 18px 20px; border-bottom: 1px solid var(--border); }
+
+.brand-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+
+.brand-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, #00c6a2, #5b8dee);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.brand-icon svg { width: 18px; height: 18px; fill: white; }
+
+.brand-name { font-family: var(--display); font-size: 13px; font-weight: 800; color: var(--text); }
+
+.brand-meta { font-size: 9.5px; color: var(--text-dim); font-family: var(--mono); line-height: 1.6; }
+.brand-meta span { display: block; }
+
+.nav { padding: 14px 10px; flex: 1; }
+.nav-group { font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); font-family: var(--mono); padding: 0 8px; margin: 14px 0 5px; }
+.nav-group:first-child { margin-top: 0; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 8px; border-radius: 6px;
+  color: var(--text-mid); font-size: 12px; font-weight: 500;
+  text-decoration: none; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.nav-item.active { background: rgba(0,198,162,0.09); color: var(--accent); }
+.nav-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border2); flex-shrink: 0; }
+.nav-item.active .nav-dot { background: var(--accent); }
+
+.nav-indent { padding-left: 20px !important; font-size: 11.5px !important; }
+
+.sidebar-foot { padding: 14px 18px 0; border-top: 1px solid var(--border); margin-top: 10px; }
+.sidebar-foot a { font-size: 10px; color: var(--accent); text-decoration: none; font-family: var(--mono); opacity: 0.7; }
+.sidebar-foot a:hover { opacity: 1; }
+
+/* ── Main ── */
+.main { flex: 1; padding: 44px 52px; overflow-x: hidden; }
+
+/* ── Cover ── */
+.cover {
+  margin-bottom: 56px; padding-bottom: 44px;
+  border-bottom: 1px solid var(--border);
+}
+
+.doc-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.25);
+  border-radius: 999px; padding: 3px 11px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--purple); font-family: var(--mono);
+  margin-bottom: 18px;
+}
+
+h1 {
+  font-family: var(--display);
+  font-size: 38px; font-weight: 800;
+  line-height: 1.1; letter-spacing: -0.02em; color: var(--text);
+  margin-bottom: 14px;
+}
+h1 span { background: linear-gradient(135deg, #00c6a2, #5b8dee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.cover-desc { font-size: 15px; color: var(--text-mid); line-height: 1.6; max-width: 580px; margin-bottom: 24px; }
+
+.meta-row { display: flex; flex-wrap: wrap; gap: 16px; font-size: 11px; font-family: var(--mono); color: var(--text-dim); }
+.meta-item { display: flex; align-items: center; gap: 5px; }
+
+/* ── Section ── */
+.section { margin-bottom: 60px; scroll-margin-top: 20px; }
+
+h2 {
+  font-family: var(--display);
+  font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: var(--text);
+  margin-bottom: 6px; display: flex; align-items: center; gap: 10px;
+}
+
+.sec-num {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em; font-family: var(--mono);
+  color: var(--accent); background: rgba(0,198,162,0.1); border: 1px solid rgba(0,198,162,0.2);
+  border-radius: 4px; padding: 1px 6px;
+}
+
+.section-intro { font-size: 13px; color: var(--text-dim); margin-bottom: 22px; }
+
+h3 {
+  font-family: var(--display); font-size: 16px; font-weight: 700; color: var(--text);
+  margin: 26px 0 10px; display: flex; align-items: center; gap: 8px;
+}
+h3::before { content: ''; width: 3px; height: 16px; border-radius: 2px; background: linear-gradient(180deg, var(--accent), var(--accent2)); flex-shrink: 0; }
+
+h4 { font-size: 11px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.09em; font-family: var(--mono); margin: 18px 0 7px; }
+
+p { color: var(--text-mid); margin-bottom: 12px; line-height: 1.7; }
+
+/* ── Bug cards ── */
+.bug-list { display: flex; flex-direction: column; gap: 18px; margin-top: 6px; }
+
+.bug-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.bug-card-header {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 18px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+
+.bug-id {
+  font-size: 9.5px; font-weight: 700; font-family: var(--mono);
+  letter-spacing: 0.06em; border-radius: 5px; padding: 2px 7px; flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.bug-id.critical { background: rgba(240,78,106,0.12); color: var(--red); border: 1px solid rgba(240,78,106,0.25); }
+.bug-id.major    { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+.bug-id.minor    { background: rgba(91,141,238,0.12); color: #93b4f5;  border: 1px solid rgba(91,141,238,0.25); }
+.bug-id.feat     { background: rgba(0,198,162,0.12); color: var(--accent); border: 1px solid rgba(0,198,162,0.25); }
+
+.bug-title-wrap { flex: 1; }
+.bug-title { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.bug-file { font-size: 10px; font-family: var(--mono); color: var(--text-dim); }
+
+.bug-body { padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+
+.bug-row { display: grid; grid-template-columns: 120px 1fr; gap: 10px; align-items: flex-start; }
+.bug-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; font-family: var(--mono); color: var(--text-dim); padding-top: 1px; }
+.bug-value { font-size: 12.5px; color: var(--text-mid); line-height: 1.55; }
+.bug-value.fix { color: #6dd8be; }
+.bug-value code { background: rgba(0,0,0,0.35); border: 1px solid var(--border2); border-radius: 3px; padding: 0 5px; font-family: var(--mono); font-size: 11px; color: var(--accent); }
+
+/* ── Timeline ── */
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 1px; background: linear-gradient(180deg, var(--accent), var(--accent2), transparent); }
+
+.tl-item { position: relative; margin-bottom: 24px; }
+.tl-item:last-child { margin-bottom: 0; }
+
+.tl-dot {
+  position: absolute; left: -24px; top: 5px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--surface2); border: 2px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+}
+.tl-dot-inner { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+.tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.tl-phase { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--text); }
+.tl-tag { font-size: 9px; font-family: var(--mono); font-weight: 700; letter-spacing: 0.06em; border-radius: 999px; padding: 2px 8px; }
+.tl-tag.build  { background: rgba(0,198,162,0.1);  color: var(--accent); border: 1px solid rgba(0,198,162,0.2); }
+.tl-tag.fix    { background: rgba(240,78,106,0.1);  color: var(--red);    border: 1px solid rgba(240,78,106,0.2); }
+.tl-tag.polish { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+.tl-tag.feat   { background: rgba(245,158,11,0.1);  color: var(--amber);  border: 1px solid rgba(245,158,11,0.2); }
+
+.tl-body { font-size: 12.5px; color: var(--text-dim); line-height: 1.6; }
+.tl-body ul { padding-left: 18px; }
+.tl-body li { margin-bottom: 3px; }
+
+/* ── Architecture boxes ── */
+.arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+
+.arch-box {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 16px 18px;
+}
+
+.arch-box-title { font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 7px; }
+.arch-box-icon { font-size: 16px; }
+.arch-box-desc { font-size: 12px; color: var(--text-dim); line-height: 1.55; }
+.arch-box-file { font-size: 10px; font-family: var(--mono); color: var(--accent); margin-top: 6px; }
+
+/* ── Code block ── */
+.code-block {
+  background: rgba(0,0,0,0.4); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 14px 16px; margin: 10px 0;
+  font-family: var(--mono); font-size: 11.5px; color: #93b4f5;
+  line-height: 1.6; overflow-x: auto; white-space: pre;
+}
+
+.code-block .cm  { color: var(--text-dim); }
+.code-block .kw  { color: var(--amber); }
+.code-block .fn  { color: var(--accent); }
+.code-block .str { color: #6dd8be; }
+.code-block .num { color: #f9a8d4; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 12.5px; }
+th { background: var(--surface2); color: var(--text-mid); font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--mono); padding: 9px 14px; text-align: left; border-bottom: 1px solid var(--border2); }
+td { padding: 9px 14px; color: var(--text-mid); border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.015); }
+td:first-child { color: var(--text); font-weight: 500; }
+
+/* ── Info boxes ── */
+.ibox {
+  display: flex; gap: 11px; border-radius: 9px; padding: 12px 15px;
+  margin: 14px 0; font-size: 12.5px; line-height: 1.55; align-items: flex-start;
+}
+.ibox.tip  { background: rgba(0,198,162,0.07); border: 1px solid rgba(0,198,162,0.2); color: #6dd8be; }
+.ibox.warn { background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2); color: #fbbf24; }
+.ibox.note { background: rgba(91,141,238,0.07); border: 1px solid rgba(91,141,238,0.2); color: #93b4f5; }
+.ibox.danger { background: rgba(240,78,106,0.07); border: 1px solid rgba(240,78,106,0.2); color: #fb7185; }
+.ibox-icon { font-size: 15px; flex-shrink: 0; }
+
+code { background: rgba(0,0,0,0.3); border: 1px solid var(--border2); border-radius: 3px; padding: 1px 5px; font-family: var(--mono); font-size: 11.5px; color: var(--accent); }
+
+.divider { height: 1px; background: var(--border); margin: 40px 0; }
+
+/* ── Badge ── */
+.badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 1px 7px; font-size: 9.5px; font-weight: 700; font-family: var(--mono); letter-spacing: 0.05em; }
+.b-green  { background: rgba(34,197,94,0.1);  color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+.b-red    { background: rgba(240,78,106,0.1); color: var(--red);   border: 1px solid rgba(240,78,106,0.2); }
+.b-amber  { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+.b-blue   { background: rgba(91,141,238,0.1); color: #93b4f5;      border: 1px solid rgba(91,141,238,0.2); }
+.b-purple { background: rgba(167,139,250,0.1);color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 5px; }
+
+@media (max-width: 820px) {
+  .sidebar { display: none; }
+  .main { padding: 24px 18px; }
+  .arch-grid { grid-template-columns: 1fr; }
+  h1 { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ── SIDEBAR ── -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-row">
+      <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg></div>
+      <div class="brand-name">AI Context Bridge</div>
+    </div>
+    <div class="brand-meta">
+      <span>KT &amp; Handover Document</span>
+      <span>v1.0.0 · 22.04.2025</span>
+      <span>by Mamatva</span>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="nav-group">Overview</div>
+    <a class="nav-item" href="#project"><div class="nav-dot"></div>Project Summary</a>
+    <a class="nav-item" href="#architecture"><div class="nav-dot"></div>Architecture</a>
+    <a class="nav-item" href="#timeline"><div class="nav-dot"></div>Build Timeline</a>
+
+    <div class="nav-group">Bug Log</div>
+    <a class="nav-item" href="#bugs-widget"><div class="nav-dot"></div>Widget Bugs</a>
+    <a class="nav-item" href="#bugs-settings"><div class="nav-dot"></div>Settings Bugs</a>
+    <a class="nav-item" href="#bugs-injection"><div class="nav-dot"></div>Injection Bugs</a>
+    <a class="nav-item nav-indent" href="#bugs-gemini"><div class="nav-dot"></div>Gemini</a>
+    <a class="nav-item nav-indent" href="#bugs-meta"><div class="nav-dot"></div>Meta AI</a>
+    <a class="nav-item nav-indent" href="#bugs-grok"><div class="nav-dot"></div>Grok</a>
+    <a class="nav-item" href="#bugs-autosubmit"><div class="nav-dot"></div>Auto-Submit Bugs</a>
+
+    <div class="nav-group">Deep Dives</div>
+    <a class="nav-item" href="#shadow-dom"><div class="nav-dot"></div>Shadow DOM Fix</a>
+    <a class="nav-item" href="#race-condition"><div class="nav-dot"></div>Race Conditions</a>
+    <a class="nav-item" href="#har-analysis"><div class="nav-dot"></div>HAR Analysis</a>
+
+    <div class="nav-group">Changes</div>
+    <a class="nav-item" href="#phase8-ui-removal"><div class="nav-dot"></div>v1.0.1 · UI Platform Removal</a>
+    <a class="nav-item" href="#phase9-help-link"><div class="nav-dot"></div>v1.20 · Help Doc Link</a>
+
+    <div class="nav-group">Handover</div>
+    <a class="nav-item" href="#known-issues"><div class="nav-dot"></div>Known Issues</a>
+    <a class="nav-item" href="#future-work"><div class="nav-dot"></div>Future Work</a>
+    <a class="nav-item" href="#files-ref"><div class="nav-dot"></div>File Reference</a>
+    <a class="nav-item" href="#checklist"><div class="nav-dot"></div>Onboarding Checklist</a>
+  </div>
+  <div class="sidebar-foot">
+    <a href="https://techwithmamatva.blogspot.com/" target="_blank">↗ techwithmamatva.blogspot.com</a>
+  </div>
+</nav>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+<!-- Cover -->
+<div class="cover" id="project">
+  <div class="doc-badge">📋 KT &amp; Handover · Internal Reference</div>
+  <h1>AI Context <span>Bridge</span><br>Development Handover</h1>
+  <p class="cover-desc">
+    A complete knowledge transfer document covering what was built, every bug encountered and how it was fixed, key technical decisions, and a clear handover guide for anyone picking this up next.
+  </p>
+  <div class="meta-row">
+    <div class="meta-item">📅 Created: 22 April 2025</div>
+    <div class="meta-item">📝 Updated: 29 March 2026</div>
+    <div class="meta-item">🔖 Version: 1.20</div>
+    <div class="meta-item">🛠 Platform: Chrome MV3 Extension</div>
+    <div class="meta-item">👤 Owner: Mamatva</div>
+  </div>
+</div>
+
+<!-- ── PROJECT SUMMARY ── -->
+<div class="section" id="project-summary">
+  <h2><span class="sec-num">01</span> Project Summary</h2>
+  <p class="section-intro">What we built, why, and the core constraints.</p>
+
+  <h3>What It Is</h3>
+  <p>A Chrome Extension (Manifest V3) that lets users send selected text or full page content from any webpage directly into the chat interfaces of Claude, ChatGPT, Gemini, Meta AI, and Grok — without APIs, without copy-paste, and without leaving the source page.</p>
+
+  <h3>Core Constraints</h3>
+  <table>
+    <tr><th>Constraint</th><th>Impact</th></tr>
+    <tr><td>No API keys</td><td>All injection must be done via DOM manipulation on the AI platform's own webpage</td></tr>
+    <tr><td>Manifest V3</td><td>Service Worker background (not persistent), strict CSP rules, no remote code</td></tr>
+    <tr><td>5 AI platforms</td><td>Each uses a completely different editor framework — required 5 separate injectors</td></tr>
+    <tr><td>Shadow DOM isolation</td><td>Widget CSS must not be polluted by host page styles — resolved with Shadow DOM</td></tr>
+    <tr><td>No storage server</td><td>All data (settings, custom prompts) stored in <code>chrome.storage.local</code> only</td></tr>
+  </table>
+
+  <h3>Final Feature Set</h3>
+  <div class="arch-grid">
+    <div class="arch-box"><div class="arch-box-title"><span class="arch-box-icon">⚡</span> Floating Widget</div><div class="arch-box-desc">Draggable panel with segmented mode toggle, platform selector with SVG icons, preview box, 3 action buttons, custom prompt pills. Lives in Shadow DOM.</div></div>
+    <div class="arch-box"><div class="arch-box-title"><span class="arch-box-icon">💬</span> Selection Tooltip</div><div class="arch-box-desc">Mini quick-action bar appears above selected text. Explain, Summarize, More… buttons. 120ms debounce.</div></div>
+    <div class="arch-box"><div class="arch-box-title"><span class="arch-box-icon">🖱</span> Right-Click Menu</div><div class="arch-box-desc">Chrome context menu with built-in actions + custom prompt templates. Rebuilds dynamically when prompts change via <code>storage.onChanged</code>.</div></div>
+    <div class="arch-box"><div class="arch-box-title"><span class="arch-box-icon">🎯</span> Custom Prompts</div><div class="arch-box-desc">Up to 10 saved templates (name + body). Available in widget, tooltip panel, and right-click menu simultaneously.</div></div>
+    <div class="arch-box"><div class="arch-box-title"><span class="arch-box-icon">🚀</span> Auto-Submit</div><div class="arch-box-desc">Automatically clicks send after injection. Platform-specific strategies per injector.</div></div>
+    <div class="arch-box"><div class="arch-box-title"><span class="arch-box-icon">⚙️</span> Settings Popup</div><div class="arch-box-desc">Real-time saving, no Save button. Default platform, toggles, custom prompt manager, help button → local HTML guide.</div></div>
+  </div>
+</div>
+
+<!-- ── ARCHITECTURE ── -->
+<div class="section" id="architecture">
+  <h2><span class="sec-num">02</span> Architecture</h2>
+
+  <h3>File Map</h3>
+  <table>
+    <tr><th>File</th><th>Role</th><th>Key Responsibility</th></tr>
+    <tr><td><code>background.js</code></td><td>Service Worker</td><td>Context menu setup &amp; rebuild, message router, <code>storeAndOpen()</code>, autoSubmit flag inclusion</td></tr>
+    <tr><td><code>content.js</code></td><td>Content Script</td><td>Shadow DOM widget, FAB, panel, tooltip, selection detection, message listener</td></tr>
+    <tr><td><code>injectors/claude.js</code></td><td>Platform Injector</td><td>ProseMirror <code>execCommand</code> injection + send button click</td></tr>
+    <tr><td><code>injectors/chatgpt.js</code></td><td>Platform Injector</td><td>React native setter trick + send button</td></tr>
+    <tr><td><code>injectors/gemini.js</code></td><td>Platform Injector</td><td>Quill <code>execCommand</code> + Angular event sequence + structural button finder</td></tr>
+    <tr><td><code>injectors/meta.js</code></td><td>Platform Injector</td><td>React controlled input/textarea + value hold loop + Enter key submit</td></tr>
+    <tr><td><code>injectors/grok.js</code></td><td>Platform Injector</td><td>Textarea native setter + button click</td></tr>
+    <tr><td><code>popup/popup.html</code></td><td>Extension Popup</td><td>Settings UI + add-prompt form view</td></tr>
+    <tr><td><code>popup/popup.js</code></td><td>Popup Logic</td><td>Real-time settings save, custom prompt CRUD, help button</td></tr>
+    <tr><td><code>popup/popup.css</code></td><td>Popup Styles</td><td>Navy dark theme, provider cards, prompt chips</td></tr>
+    <tr><td><code>manifest.json</code></td><td>Extension Config</td><td>MV3 permissions, content script routing, web_accessible_resources</td></tr>
+    <tr><td><code>Help_Guide.html</code></td><td>Bundled Docs</td><td>Full user guide opened via <code>chrome.runtime.getURL()</code></td></tr>
+  </table>
+
+  <h3>Data Flow</h3>
+  <div class="code-block"><span class="cm">// User selects text → clicks Explain in widget</span>
+content.js  →  chrome.runtime.sendMessage({ type: "AICB_SEND", action, text, provider })
+background.js  →  buildPrompt(action, text)  →  storeAndOpen(prompt, provider)
+             →  chrome.storage.local.set({ pendingPrompt: { text, provider, autoSubmit, timestamp } })
+             →  chrome.tabs.create({ url: platform.url })
+
+<span class="cm">// New tab opens on AI platform</span>
+injector.js  →  chrome.storage.local.get("pendingPrompt")
+             →  findEditor()  →  injectText(editor, text)
+             →  if (pending.autoSubmit) → clickSend()
+             →  chrome.storage.local.remove("pendingPrompt")</div>
+
+  <h3>Storage Schema</h3>
+  <div class="code-block"><span class="cm">// chrome.storage.local keys:</span>
+<span class="str">"settings"</span>: {
+  defaultProvider:  <span class="str">"claude"</span>,   <span class="cm">// | chatgpt | grok (gemini + meta hidden in UI since v1.0.1)</span>
+  floatingWidget:   <span class="kw">true</span>,
+  selectionTooltip: <span class="kw">true</span>,
+  autoSubmit:       <span class="kw">false</span>
+}
+
+<span class="str">"customPrompts"</span>: [
+  { id: <span class="str">"cp_1714000000000"</span>, name: <span class="str">"🎯 Rewrite Formally"</span>, prompt: <span class="str">"Rewrite this in a formal tone..."</span> }
+]
+
+<span class="str">"pendingPrompt"</span>: {
+  text:       <span class="str">"Please explain..."</span>,  <span class="cm">// full formatted prompt</span>
+  provider:   <span class="str">"claude"</span>,
+  autoSubmit: <span class="kw">false</span>,
+  timestamp:  <span class="num">1714000000000</span>         <span class="cm">// discarded after 15s</span>
+}</div>
+</div>
+
+<!-- ── TIMELINE ── -->
+<div class="section" id="timeline">
+  <h2><span class="sec-num">03</span> Build Timeline</h2>
+  <div class="timeline">
+
+    <div class="tl-item">
+      <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+      <div class="tl-header">
+        <span class="tl-phase">Phase 1 — Initial Build</span>
+        <span class="tl-tag build">BUILD</span>
+      </div>
+      <div class="tl-body"><ul>
+        <li>Created full MV3 extension skeleton: manifest, background, 5 injectors, content script, popup</li>
+        <li>Floating widget with FAB, panel, draggable, selection tooltip</li>
+        <li>Context menu with Explain / Summarize / Custom Ask</li>
+        <li>Provider dropdown, Full Page toggle (originally a toggle switch)</li>
+        <li>Settings popup with Save button, provider grid with emoji icons</li>
+        <li>Prompt relay via background service worker (AICB_GET_SETTINGS / AICB_SAVE_SETTINGS messages)</li>
+      </ul></div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+      <div class="tl-header">
+        <span class="tl-phase">Phase 2 — Settings &amp; Widget Stability Fixes</span>
+        <span class="tl-tag fix">FIX</span>
+      </div>
+      <div class="tl-body"><ul>
+        <li>BUG: Always defaulting to Claude regardless of selection → Fixed by bypassing background message relay; popup and content scripts now use <code>chrome.storage.local</code> directly</li>
+        <li>BUG: Settings not persisting → Root cause: MV3 service worker goes dormant, drops messages → Same fix</li>
+        <li>BUG: Widget disappears after page load on SPAs → Fixed by moving widget from <code>document.body</code> to <code>document.documentElement</code> + MutationObserver re-injection</li>
+        <li>UPGRADE: Widget moved into Shadow DOM for full CSS isolation from host pages</li>
+      </ul></div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+      <div class="tl-header">
+        <span class="tl-phase">Phase 3 — Injection Fixes (Platform by Platform)</span>
+        <span class="tl-tag fix">FIX</span>
+      </div>
+      <div class="tl-body"><ul>
+        <li>Gemini: Only first line injected → ClipboardEvent approach dropped; switched to <code>execCommand("insertText")</code></li>
+        <li>Meta AI: Nothing injected → Discovered via HAR analysis that Meta uses a plain <code>&lt;input&gt;</code> not contenteditable; switched to React native prototype setter</li>
+        <li>Meta AI: Text flickers and disappears → Added value hold loop to fight React reconciler</li>
+        <li>Grok: Nothing injected → Fixed selector order and React native setter</li>
+        <li>All injectors: Race condition from <code>subtree: true</code> MutationObserver → Added synchronous <code>inProgress</code> flag + 300ms debounce + <code>childList: false</code></li>
+      </ul></div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+      <div class="tl-header">
+        <span class="tl-phase">Phase 4 — Auto-Submit</span>
+        <span class="tl-tag feat">FEATURE</span>
+      </div>
+      <div class="tl-body"><ul>
+        <li>Auto-Submit toggle existed in UI but was never wired to the injectors</li>
+        <li>Added <code>autoSubmit</code> flag to <code>pendingPrompt</code> in background.js</li>
+        <li>Each injector reads the flag and calls platform-specific <code>clickSend()</code> / <code>submitForm()</code></li>
+        <li>Gemini auto-submit: Enter key dispatched on <code>rich-textarea</code> host (Angular listens here, not inner div); structural button finder as fallback</li>
+      </ul></div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+      <div class="tl-header">
+        <span class="tl-phase">Phase 5 — UI/UX Polish</span>
+        <span class="tl-tag polish">POLISH</span>
+      </div>
+      <div class="tl-body"><ul>
+        <li>Floating widget redesigned: segmented Full Page / Selected Text toggle, pill buttons, navy theme, status in header</li>
+        <li>Full Page button changed from toggle → button (matching other action buttons)</li>
+        <li>Custom Ask textarea moved out of button grid → compact wrap div above buttons; grid always stays 3-column</li>
+        <li>Popup: Save button removed → real-time saving on every interaction; toast notification</li>
+        <li>Popup: "Default Platform" → "Default AI Platform"</li>
+        <li>SVG icons replaced emoji for all platform icons (popup + widget)</li>
+        <li>Creator strip added (Mamatva + blog link) in both popup and widget</li>
+        <li>Version + date added: v1.0.0 [22.04.2025]</li>
+      </ul></div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+      <div class="tl-header">
+        <span class="tl-phase">Phase 6 — Custom Prompt Templates</span>
+        <span class="tl-tag feat">FEATURE</span>
+      </div>
+      <div class="tl-body"><ul>
+        <li>Full CRUD for custom prompts (max 10, name 40 chars, body 500 chars)</li>
+        <li>Popup: add-prompt view with live char counters, back navigation</li>
+        <li>Widget: "My Prompts" section with pill buttons auto-shown when prompts exist</li>
+        <li>Background: context menu rebuilds dynamically via <code>storage.onChanged</code></li>
+        <li>Content scripts: listen for <code>AICB_CUSTOM_PROMPTS_UPDATED</code> message → re-render pills live</li>
+      </ul></div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+      <div class="tl-header">
+        <span class="tl-phase">Phase 7 — Docs &amp; Help Integration</span>
+        <span class="tl-tag polish">POLISH</span>
+      </div>
+      <div class="tl-body"><ul>
+        <li>Help_Guide.html: full interactive docs site bundled inside extension</li>
+        <li>README.md: comprehensive GitHub-style readme with architecture notes</li>
+        <li>KT_Handover.html: this document</li>
+        <li>Popup: ? button planned to open Help_Guide.html via <code>chrome.runtime.getURL()</code> — <strong>not shipped</strong> in this phase; completed in v1.20 (Phase 9)</li>
+        <li><code>web_accessible_resources</code> planned for manifest — <strong>not added</strong> in this phase; added in v1.20 (Phase 9)</li>
+      </ul></div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+      <div class="tl-header">
+        <span class="tl-phase">Phase 8 — Gemini &amp; Meta AI Hidden from UI</span>
+        <span class="tl-tag fix">FIX</span>
+        <span class="tl-tag" style="background:rgba(91,141,238,0.1);color:#93b4f5;border:1px solid rgba(91,141,238,0.2);">29.03.2026 · v1.0.1</span>
+      </div>
+      <div class="tl-body"><ul>
+        <li>Removed <code>gemini</code> and <code>meta</code> from <code>PROVIDERS[]</code> in <code>popup/popup.js</code> — no longer visible in popup platform grid</li>
+        <li>Removed <code>gemini</code> and <code>meta</code> from <code>PROVIDERS[]</code> in <code>content.js</code> — no longer visible in floating widget platform selector</li>
+        <li>All injector code preserved intact: <code>injectors/gemini.js</code> and <code>injectors/meta.js</code> untouched</li>
+        <li><code>AI_PLATFORMS</code> routing table in <code>background.js</code> unchanged — both platforms still routable if re-enabled</li>
+        <li>Reason: both platforms became unreliable due to ongoing UI changes on the platform side; hiding is preferred over broken UX</li>
+      </ul></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── PLATFORM REMOVAL DETAIL ── -->
+<div class="section" id="phase8-ui-removal">
+  <h2><span class="sec-num">03b</span> Change Log — v1.0.1 UI Platform Removal</h2>
+  <p class="section-intro">Gemini and Meta AI hidden from UI. Code preserved. Dated 29 March 2026.</p>
+
+  <h3>What Changed</h3>
+  <table>
+    <tr><th>File</th><th>Change</th><th>Lines Affected</th></tr>
+    <tr><td><code>popup/popup.js</code></td><td>Removed <code>gemini</code> and <code>meta</code> entries from <code>PROVIDERS[]</code></td><td>2 lines removed</td></tr>
+    <tr><td><code>content.js</code></td><td>Removed <code>gemini</code> and <code>meta</code> entries from <code>PROVIDERS[]</code></td><td>2 lines removed</td></tr>
+    <tr><td><code>injectors/gemini.js</code></td><td>No change — fully preserved</td><td>—</td></tr>
+    <tr><td><code>injectors/meta.js</code></td><td>No change — fully preserved</td><td>—</td></tr>
+    <tr><td><code>background.js</code></td><td>No change — <code>AI_PLATFORMS</code> routing table intact</td><td>—</td></tr>
+  </table>
+
+  <h3>How to Re-Enable</h3>
+  <div class="code-block"><span class="cm">// In popup/popup.js — add back to PROVIDERS[]:</span>
+{ id:<span class="str">"gemini"</span>, name:<span class="str">"Gemini"</span>, color:<span class="str">"#4285f4"</span>, icon:<span class="str">`&lt;svg ...&gt;`</span> },
+{ id:<span class="str">"meta"</span>,   name:<span class="str">"Meta AI"</span>, color:<span class="str">"#0082fb"</span>, icon:<span class="str">`&lt;svg ...&gt;`</span> },
+
+<span class="cm">// Same two entries needed in content.js PROVIDERS[] (widget platform selector)</span>
+<span class="cm">// Before re-enabling: verify injector selectors against live DOM using HAR analysis (see §10)</span></div>
+
+  <div class="ibox warn">
+    <div class="ibox-icon">⚠️</div>
+    <div>Always test injection manually on a fresh tab before re-enabling. Both platforms update their UI frequently. Confirm current selectors in <code>findEditor()</code> and <code>findSendButton()</code> match the live DOM.</div>
+  </div>
+</div>
+
+<div class="section" id="phase9-help-link">
+  <h2><span class="sec-num">03c</span> Change Log — v1.20 Help Doc Link &amp; Version Bump</h2>
+  <p class="section-intro">Help Guide wired to popup. Version updated to v1.20. Dated 29 March 2026.</p>
+
+  <h3>What Changed</h3>
+  <table>
+    <tr><th>File</th><th>Change</th></tr>
+    <tr><td><code>Help_Guide.html</code></td><td>Bundled inside extension folder for the first time. Previously existed only as a standalone doc outside the extension</td></tr>
+    <tr><td><code>manifest.json</code></td><td>Added <code>web_accessible_resources</code> block declaring <code>Help_Guide.html</code> — required for <code>chrome.runtime.getURL()</code> to serve it. Version bumped to <code>1.20</code></td></tr>
+    <tr><td><code>popup/popup.html</code></td><td>Added <code>?</code> button in popup header (between logo and status pill). Version + date updated to <code>v1.20 [29.03.2026]</code></td></tr>
+    <tr><td><code>popup/popup.js</code></td><td>Added <code>wireHelpButton()</code> function — attaches click handler that calls <code>chrome.tabs.create({ url: chrome.runtime.getURL("Help_Guide.html") })</code>. Hover states handled inline</td></tr>
+    <tr><td><code>content.js</code></td><td>Widget footer version string updated to <code>v1.20 [29.03.2026]</code></td></tr>
+  </table>
+
+  <h3>Why It Was Missing</h3>
+  <p>The KT document had always listed the help button as a completed feature (Phase 7), but the <code>web_accessible_resources</code> entry was never added to <code>manifest.json</code>, <code>Help_Guide.html</code> was never copied into the extension folder, and <code>wireHelpButton()</code> was never written in <code>popup.js</code>. The <code>btn-help</code> element did not exist in <code>popup.html</code>. All four pieces were missing.</p>
+
+  <h3>How the Help Link Works</h3>
+  <div class="code-block"><span class="cm">// popup.html — ? button in header</span>
+&lt;button id=<span class="str">"btn-help"</span> title=<span class="str">"Open Help Guide"</span>&gt;?&lt;/button&gt;
+
+<span class="cm">// popup.js — wireHelpButton()</span>
+btn.addEventListener(<span class="str">"click"</span>, () => {
+  chrome.tabs.create({ url: chrome.runtime.<span class="fn">getURL</span>(<span class="str">"Help_Guide.html"</span>) });
+});
+
+<span class="cm">// manifest.json — required for getURL() to work</span>
+<span class="str">"web_accessible_resources"</span>: [
+  { <span class="str">"resources"</span>: [<span class="str">"Help_Guide.html"</span>], <span class="str">"matches"</span>: [<span class="str">"&lt;all_urls&gt;"</span>] }
+]</div>
+
+  <div class="ibox note">
+    <div class="ibox-icon">ℹ️</div>
+    <div>If you add other HTML files that need to be openable from the extension (e.g. a changelog page), add them to the <code>web_accessible_resources.resources</code> array in <code>manifest.json</code>. Without this, Chrome will refuse to serve them via <code>chrome.runtime.getURL()</code>.</div>
+  </div>
+</div>
+
+
+<div class="divider"></div>
+
+<!-- ── BUG LOG ── -->
+<div class="section" id="bugs-widget">
+  <h2><span class="sec-num">04</span> Bug Log — Widget &amp; CSS</h2>
+
+  <div class="bug-list">
+
+    <div class="bug-card">
+      <div class="bug-card-header">
+        <div class="bug-id critical">CRITICAL</div>
+        <div class="bug-title-wrap">
+          <div class="bug-title">Widget disappears after page load / navigation</div>
+          <div class="bug-file">content.js · All pages</div>
+        </div>
+      </div>
+      <div class="bug-body">
+        <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">FAB button and panel appear briefly then vanish completely on React/Next.js apps and SPAs</div></div>
+        <div class="bug-row"><div class="bug-label">Root Cause</div><div class="bug-value">Widget was appended to <code>document.body</code>. SPA frameworks own the body element and replace its children during route changes and re-renders</div></div>
+        <div class="bug-row"><div class="bug-label">Fix</div><div class="bug-value fix">Changed append target to <code>document.documentElement</code> (the &lt;html&gt; element). Frameworks never touch this. Added <code>MutationObserver</code> watching html's direct children to re-inject if widget is removed</div></div>
+        <div class="bug-row"><div class="bug-label">Final Fix</div><div class="bug-value fix">Moved entire widget into a <strong>Shadow DOM</strong> — zero-size host element attached to body. Shadow DOM provides complete CSS isolation and survives framework re-renders</div></div>
+      </div>
+    </div>
+
+    <div class="bug-card">
+      <div class="bug-card-header">
+        <div class="bug-id critical">CRITICAL</div>
+        <div class="bug-title-wrap">
+          <div class="bug-title">Page CSS breaks the widget appearance</div>
+          <div class="bug-file">content.js · widget.css</div>
+        </div>
+      </div>
+      <div class="bug-body">
+        <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">Widget shows on some pages but is invisible, misaligned, or unstyled on others. Especially bad on sites using <code>* { all: unset }</code> or <code>position: static !important</code></div></div>
+        <div class="bug-row"><div class="bug-label">Root Cause</div><div class="bug-value">widget.css was injected as a page-level stylesheet via manifest content_scripts. Host page CSS reset rules override our styles — <code>position: fixed</code>, <code>display: flex</code>, <code>z-index</code> all wiped</div></div>
+        <div class="bug-row"><div class="bug-label">Fix</div><div class="bug-value fix">All widget CSS moved inside a <code>&lt;style&gt;</code> tag injected into the Shadow DOM. Shadow DOM creates a hard CSS boundary — host page styles cannot pierce it and widget styles cannot leak out. <code>widget.css</code> in manifest removed</div></div>
+      </div>
+    </div>
+
+    <div class="bug-card">
+      <div class="bug-card-header">
+        <div class="bug-id major">MAJOR</div>
+        <div class="bug-title-wrap">
+          <div class="bug-title">Custom Ask expands widget to huge height, buttons stack vertically</div>
+          <div class="bug-file">content.js · widget panel</div>
+        </div>
+      </div>
+      <div class="bug-body">
+        <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">Clicking Custom Ask caused the textarea to appear AND the action grid to switch to 1-column, making all three buttons stack on top of each other. Panel doubled in height</div></div>
+        <div class="bug-row"><div class="bug-label">Root Cause</div><div class="bug-value">Textarea was inside <code>.platform-wrap</code>. On show, it pushed the action grid down. The grid had a <code>.custom-open { grid-template-columns: 1fr }</code> override that collapsed it to 1 column</div></div>
+        <div class="bug-row"><div class="bug-label">Fix</div><div class="bug-value fix">Moved textarea into its own <code>.custom-wrap.hidden</code> div between platform selector and action buttons. Grid stays permanently <code>1fr 1fr 1fr</code>. Custom Ask button gets <code>.send-mode</code> class (colour change only) instead of reflowing the grid</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Settings Bugs -->
+<div class="section" id="bugs-settings">
+  <h2><span class="sec-num">05</span> Bug Log — Settings &amp; Storage</h2>
+
+  <div class="bug-list">
+
+    <div class="bug-card">
+      <div class="bug-card-header">
+        <div class="bug-id critical">CRITICAL</div>
+        <div class="bug-title-wrap">
+          <div class="bug-title">Always defaulting to Claude — platform selection not saving</div>
+          <div class="bug-file">popup/popup.js · background.js · content.js</div>
+        </div>
+      </div>
+      <div class="bug-body">
+        <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">User changes default platform to ChatGPT, saves, reopens popup — it shows Claude again. Widget also always opens Claude</div></div>
+        <div class="bug-row"><div class="bug-label">Root Cause</div><div class="bug-value">Settings were saved/loaded via background service worker messages (<code>AICB_GET_SETTINGS</code> / <code>AICB_SAVE_SETTINGS</code>). MV3 service workers go dormant after ~30 seconds of inactivity. When the worker was asleep, save messages were silently dropped</div></div>
+        <div class="bug-row"><div class="bug-label">Fix</div><div class="bug-value fix">Removed the message relay entirely. Popup uses <code>chrome.storage.local.get/set</code> directly. Content script uses <code>chrome.storage.local.get</code> directly. Background worker only handles tab creation and prompt routing</div></div>
+        <div class="bug-row"><div class="bug-label">Second issue</div><div class="bug-value">Content script was also reading provider from a stale JS variable. Fixed by reading from the DOM select element at send time: <code>shadow.querySelector("#aicb-provider")?.value</code></div></div>
+      </div>
+    </div>
+
+    <div class="bug-card">
+      <div class="bug-card-header">
+        <div class="bug-id major">MAJOR</div>
+        <div class="bug-title-wrap">
+          <div class="bug-title">Widget provider dropdown not reflecting saved setting on page load</div>
+          <div class="bug-file">content.js · init()</div>
+        </div>
+      </div>
+      <div class="bug-body">
+        <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">Popup shows correct default platform but widget panel always shows Claude in the dropdown when first opened</div></div>
+        <div class="bug-row"><div class="bug-label">Root Cause</div><div class="bug-value">Widget loaded settings via background message (same dormant worker issue). Storage read happened before the Shadow DOM select element existed</div></div>
+        <div class="bug-row"><div class="bug-label">Fix</div><div class="bug-value fix"><code>chrome.storage.local.get</code> called directly in <code>init()</code> after Shadow DOM and select element are built. Settings also pushed live via <code>AICB_SETTINGS_UPDATED</code> message from popup on every save</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Injection Bugs -->
+<div class="section" id="bugs-injection">
+  <h2><span class="sec-num">06</span> Bug Log — Text Injection</h2>
+  <p class="section-intro">Each AI platform uses a completely different editor framework. Each required its own investigation and fix strategy.</p>
+
+  <div class="section" id="bugs-gemini" style="margin-bottom:30px;">
+    <h3>Gemini</h3>
+    <div class="bug-list">
+
+      <div class="bug-card">
+        <div class="bug-card-header">
+          <div class="bug-id critical">CRITICAL</div>
+          <div class="bug-title-wrap">
+            <div class="bug-title">Only the first line of the prompt is injected into Gemini</div>
+            <div class="bug-file">injectors/gemini.js</div>
+          </div>
+        </div>
+        <div class="bug-body">
+          <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">Gemini receives only "Please explain the following selected text clearly and concisely:" — the actual selected text is missing</div></div>
+          <div class="bug-row"><div class="bug-label">Root Cause</div><div class="bug-value">Gemini uses a Quill-based <code>rich-textarea</code> editor. The original code used a <code>ClipboardEvent</code> with a <code>DataTransfer</code> object. Chrome extension content scripts cannot fully construct a trusted <code>DataTransfer</code> — the clipboard data gets sandboxed/stripped. Quill's paste handler received empty/partial data and only committed the first paragraph before giving up. The verification check <code>editor.textContent.length > 0</code> returned true (first line landed), so the retry loop stopped</div></div>
+          <div class="bug-row"><div class="bug-label">Fix</div><div class="bug-value fix">Replaced ClipboardEvent approach entirely. Use <code>document.execCommand("insertText", false, fullText)</code> — this inserts the complete multi-line string atomically, bypasses Quill's clipboard interceptor, and works reliably from extension content scripts. New verification checks the tail of the text, not just any text presence</div></div>
+        </div>
+      </div>
+
+      <div class="bug-card">
+        <div class="bug-card-header">
+          <div class="bug-id major">MAJOR</div>
+          <div class="bug-title-wrap">
+            <div class="bug-title">Gemini Auto-Submit not firing</div>
+            <div class="bug-file">injectors/gemini.js</div>
+          </div>
+        </div>
+        <div class="bug-body">
+          <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">Text injects correctly but auto-submit does nothing — send button stays disabled</div></div>
+          <div class="bug-row"><div class="bug-label">Root Cause 1</div><div class="bug-value">Angular events dispatched only to the inner <code>.ql-editor</code> div. Gemini's Angular component model lives on the <code>&lt;rich-textarea&gt;</code> host element — that's where zone.js binds its listeners. The button's disabled state is computed by the Angular component, which never saw the events</div></div>
+          <div class="bug-row"><div class="bug-label">Root Cause 2</div><div class="bug-value">Send button disabled check used <code>button.disabled</code> (DOM property) only. Angular's template binding can set <code>[disabled]</code> attribute while the property reads false — inconsistent state</div></div>
+          <div class="bug-row"><div class="bug-label">Root Cause 3</div><div class="bug-value">Gemini's send button has no stable <code>data-test-id</code> or <code>aria-label</code> in the chat UI — confirmed by HAR analysis of Gemini's minified Angular bundle</div></div>
+          <div class="bug-row"><div class="bug-label">Fix</div><div class="bug-value fix">Events now fired on BOTH <code>.ql-editor</code> AND <code>rich-textarea</code> host. Send button found by structural DOM walking from editor upward (not by attribute selector). Button disabled check uses both <code>btn.disabled</code> AND <code>btn.hasAttribute("disabled")</code>. Enter key dispatched on host element as primary submit method; structural button click as fallback</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section" id="bugs-meta" style="margin-bottom:30px;">
+    <h3>Meta AI</h3>
+    <div class="bug-list">
+
+      <div class="bug-card">
+        <div class="bug-card-header">
+          <div class="bug-id critical">CRITICAL</div>
+          <div class="bug-title-wrap">
+            <div class="bug-title">Nothing transfers to Meta AI — just redirects to the site</div>
+            <div class="bug-file">injectors/meta.js</div>
+          </div>
+        </div>
+        <div class="bug-body">
+          <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">Tab opens on meta.ai but the input box is completely empty</div></div>
+          <div class="bug-row"><div class="bug-label">Root Cause</div><div class="bug-value">All previous attempts targeted <code>div[contenteditable='true']</code> — Lexical editor assumptions. <strong>Meta AI does not use a contenteditable div.</strong> Confirmed via HAR analysis: Meta's own Vercel Speed Insights telemetry explicitly logged the element that received keyboard events as: <code>input.text-subheadline.placeholder:text-text-tertiary.min-w-0.flex-1.bg-transparent.px-2.py-3.outline-none</code> — a plain HTML <code>&lt;input type="text"&gt;</code>. In conversation view it becomes a <code>&lt;textarea&gt;</code></div></div>
+          <div class="bug-row"><div class="bug-label">Fix</div><div class="bug-value fix">Rewrote injector to target <code>input.text-subheadline</code> and <code>textarea[class*='resize-none']</code>. Used <strong>React native prototype setter</strong>: <code>Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(field, text)</code> — the only method that triggers React's synthetic onChange on a controlled input</div></div>
+        </div>
+      </div>
+
+      <div class="bug-card">
+        <div class="bug-card-header">
+          <div class="bug-id critical">CRITICAL</div>
+          <div class="bug-title-wrap">
+            <div class="bug-title">Text appears briefly then vanishes (flicker)</div>
+            <div class="bug-file">injectors/meta.js</div>
+          </div>
+        </div>
+        <div class="bug-body">
+          <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">Text visibly types into the input box, then disappears after ~100ms leaving it empty again</div></div>
+          <div class="bug-row"><div class="bug-label">Root Cause</div><div class="bug-value">Meta AI's input is a React <em>controlled component</em> — React owns the value via <code>useState</code>. After our injection, React reconciles its virtual DOM. A competing state update (likely a <code>useEffect</code> or concurrent re-render) fires with the old empty state and React commits it — overwriting our injected value</div></div>
+          <div class="bug-row"><div class="bug-label">Root Cause 2</div><div class="bug-value">The <code>MutationObserver</code> was set with <code>subtree: true</code> — it fired on every React re-render (dozens/second), causing the <code>tryInject()</code> function to be called 50+ times simultaneously before <code>injected = true</code> was set inside an async callback</div></div>
+          <div class="bug-row"><div class="bug-label">Fix 1 — Race condition</div><div class="bug-value fix">Added synchronous <code>inProgress</code> flag set BEFORE the async <code>chrome.storage.local.get()</code> call. All concurrent calls blocked at gate. Observer killed immediately on success before React re-renders begin</div></div>
+          <div class="bug-row"><div class="bug-label">Fix 2 — Observer</div><div class="bug-value fix">Changed <code>subtree: true</code> → <code>subtree: false</code> + 300ms debounce. Fires only on direct body children (catches SPA navigation) not every inner DOM mutation</div></div>
+          <div class="bug-row"><div class="bug-label">Fix 3 — Hold loop</div><div class="bug-value fix">After injection, a <code>setInterval</code> checks every 100ms if React reset the value to empty. If so, re-applies and fires events. Stops when value is stable or after 2 seconds. Cancelled before submit fires</div></div>
+        </div>
+      </div>
+
+      <div class="bug-card">
+        <div class="bug-card-header">
+          <div class="bug-id major">MAJOR</div>
+          <div class="bug-title-wrap">
+            <div class="bug-title">execCommand("selectAll") deletes entire page DOM</div>
+            <div class="bug-file">injectors/meta.js (earlier versions)</div>
+          </div>
+        </div>
+        <div class="bug-body">
+          <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">After injection attempt, the AI platform page content disappears</div></div>
+          <div class="bug-row"><div class="bug-label">Root Cause</div><div class="bug-value"><code>document.execCommand("selectAll")</code> is a page-level command. It selects all content on the entire document, not just the focused input. The subsequent <code>execCommand("delete")</code> then deletes the entire page DOM</div></div>
+          <div class="bug-row"><div class="bug-label">Fix</div><div class="bug-value fix">Replaced with Range API: <code>range.selectNodeContents(editor)</code> which scopes the selection precisely to the editor's contents only. <code>document.execCommand("delete")</code> then only clears the input field</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section" id="bugs-grok" style="margin-bottom:10px;">
+    <h3>Grok</h3>
+    <div class="bug-list">
+      <div class="bug-card">
+        <div class="bug-card-header">
+          <div class="bug-id major">MAJOR</div>
+          <div class="bug-title-wrap">
+            <div class="bug-title">Nothing transfers to Grok</div>
+            <div class="bug-file">injectors/grok.js</div>
+          </div>
+        </div>
+        <div class="bug-body">
+          <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">Tab opens on grok.com but text box is empty</div></div>
+          <div class="bug-row"><div class="bug-label">Root Cause</div><div class="bug-value">Grok uses a React-controlled textarea. Direct assignment <code>editor.value = text</code> does not trigger React's internal state update. React's controlled component ignores values set this way on next re-render</div></div>
+          <div class="bug-row"><div class="bug-label">Fix</div><div class="bug-value fix">Applied same React native prototype setter used for Meta AI. Added <code>input</code> + <code>change</code> events after setter. Also improved selector order to target <code>textarea[placeholder*='Ask']</code> before generic fallbacks</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Auto-Submit Bugs -->
+<div class="section" id="bugs-autosubmit">
+  <h2><span class="sec-num">07</span> Bug Log — Auto-Submit</h2>
+
+  <div class="bug-list">
+    <div class="bug-card">
+      <div class="bug-card-header">
+        <div class="bug-id critical">CRITICAL</div>
+        <div class="bug-title-wrap">
+          <div class="bug-title">Auto-Submit does nothing on any platform</div>
+          <div class="bug-file">background.js · all injectors</div>
+        </div>
+      </div>
+      <div class="bug-body">
+        <div class="bug-row"><div class="bug-label">Symptom</div><div class="bug-value">Auto-Submit toggle exists in popup, can be toggled, but text is injected and nothing is submitted automatically</div></div>
+        <div class="bug-row"><div class="bug-label">Root Cause</div><div class="bug-value"><code>autoSubmit</code> was stored in settings but was <strong>never included in <code>pendingPrompt</code></strong>. Injectors read <code>pendingPrompt</code> from storage — they had no way to know autoSubmit was enabled. The popup toggle was completely disconnected from the injection pipeline</div></div>
+        <div class="bug-row"><div class="bug-label">Fix</div><div class="bug-value fix">In <code>background.js → storeAndOpen()</code>: reads <code>settings.autoSubmit</code> before storing <code>pendingPrompt</code>, includes it as <code>{ text, provider, autoSubmit, timestamp }</code>. All 5 injectors now read <code>pending.autoSubmit</code> and call their platform-specific submit function if true</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Deep Dives -->
+<div class="section" id="shadow-dom">
+  <h2><span class="sec-num">08</span> Deep Dive — Shadow DOM Architecture</h2>
+
+  <p>Understanding why Shadow DOM was necessary and how it's structured is critical for any future widget work.</p>
+
+  <h3>The Problem With Regular Injection</h3>
+  <p>When a content script appends elements to the page, those elements are subject to <em>all</em> CSS rules on that page. Any site using a CSS reset like <code>* { all: unset }</code> or <code>* { box-sizing: content-box !important }</code> will break our widget's layout. This affects a surprisingly large number of sites — news sites, documentation, React apps.</p>
+
+  <h3>How Our Shadow DOM Works</h3>
+  <div class="code-block"><span class="cm">// Structure in content.js:</span>
+<span class="kw">const</span> host = document.createElement(<span class="str">"div"</span>);
+host.id = <span class="str">"aicb-host"</span>;
+host.style.cssText = <span class="str">"all:initial;position:fixed;top:0;left:0;width:0;height:0;..."</span>;
+<span class="cm">// Zero-size: no layout impact on host page whatsoever</span>
+
+shadow = host.attachShadow({ mode: <span class="str">"open"</span> });
+<span class="cm">// "open" allows chrome.devtools to inspect it (useful for debugging)</span>
+
+<span class="kw">const</span> style = document.createElement(<span class="str">"style"</span>);
+style.textContent = WIDGET_CSS;  <span class="cm">// All CSS lives inside shadow — can't be touched by page</span>
+shadow.appendChild(style);
+
+<span class="cm">// All widget elements appended to shadow, not document.body</span>
+shadow.appendChild(fab);
+shadow.appendChild(panel);
+shadow.appendChild(tip);</div>
+
+  <h3>Key Shadow DOM Rules to Remember</h3>
+  <table>
+    <tr><th>Rule</th><th>Implication</th></tr>
+    <tr><td><code>document.querySelector()</code></td><td>Does NOT find elements inside shadow DOM. Always use <code>shadow.querySelector()</code> for widget elements</td></tr>
+    <tr><td>Event bubbling</td><td>Events from inside shadow DOM bubble to the host element but carry <code>composedPath()</code> — use this to check if clicks originated from our widget</td></tr>
+    <tr><td>CSS variables</td><td>CSS custom properties DO pierce shadow boundaries — but only if defined on <code>:host</code> or the host element itself</td></tr>
+    <tr><td>Fonts</td><td>Web fonts loaded in the page ARE available inside shadow DOM</td></tr>
+    <tr><td>Shadow mode "open"</td><td>Accessible via <code>element.shadowRoot</code> from JavaScript. "closed" would block this</td></tr>
+  </table>
+
+  <div class="ibox tip">
+    <div class="ibox-icon">💡</div>
+    <div>When debugging the widget in DevTools, you'll see <code>#shadow-root (open)</code> inside <code>#aicb-host</code>. All widget elements are inside this shadow root.</div>
+  </div>
+</div>
+
+<!-- Race Condition -->
+<div class="section" id="race-condition">
+  <h2><span class="sec-num">09</span> Deep Dive — Race Condition in Injectors</h2>
+
+  <h3>The Pattern That Caused It</h3>
+  <p>This pattern was the source of the Meta AI flicker bug and instability in Gemini. It's a subtle async race that's easy to reintroduce:</p>
+
+  <div class="code-block"><span class="cm">// ❌ BROKEN — original pattern</span>
+<span class="kw">let</span> injected = <span class="kw">false</span>;
+
+<span class="kw">function</span> <span class="fn">tryInject</span>() {
+  <span class="kw">if</span> (injected) <span class="kw">return</span>;          <span class="cm">// ← checked synchronously ✓</span>
+  chrome.storage.local.<span class="fn">get</span>(..., (res) => {
+    <span class="cm">// ← by the time this callback runs, tryInject() has been</span>
+    <span class="cm">//   called 50 more times. They all passed the injected check.</span>
+    <span class="cm">//   All 50 are now in this callback simultaneously.</span>
+    injected = <span class="kw">true</span>;              <span class="cm">// ← set too late, inside async</span>
+    <span class="fn">injectText</span>(editor, text);    <span class="cm">// ← runs 50 times, fighting React</span>
+  });
+}
+
+observer.<span class="fn">observe</span>(body, { childList: <span class="kw">true</span>, subtree: <span class="kw">true</span> }); <span class="cm">// ← fires 100/sec on React</span></div>
+
+  <div class="code-block"><span class="cm">// ✅ FIXED — current pattern</span>
+<span class="kw">let</span> injected   = <span class="kw">false</span>;
+<span class="kw">let</span> inProgress = <span class="kw">false</span>;   <span class="cm">// ← NEW: synchronous lock</span>
+
+<span class="kw">function</span> <span class="fn">tryInject</span>() {
+  <span class="kw">if</span> (injected || inProgress) <span class="kw">return</span>;  <span class="cm">// ← both checked synchronously</span>
+  inProgress = <span class="kw">true</span>;                   <span class="cm">// ← SET synchronously before async</span>
+
+  chrome.storage.local.<span class="fn">get</span>(..., (res) => {
+    <span class="kw">if</span> (injected) { inProgress = <span class="kw">false</span>; <span class="kw">return</span>; }  <span class="cm">// ← re-check after await</span>
+
+    <span class="kw">if</span> (observer) { observer.<span class="fn">disconnect</span>(); }  <span class="cm">// ← kill observer BEFORE inject</span>
+    injected   = <span class="kw">true</span>;
+    inProgress = <span class="kw">false</span>;
+
+    <span class="fn">injectText</span>(editor, text);
+  });
+}
+
+<span class="kw">let</span> debounce;
+observer = <span class="kw">new</span> <span class="fn">MutationObserver</span>(() => {
+  <span class="kw">if</span> (injected || inProgress) <span class="kw">return</span>;
+  <span class="fn">clearTimeout</span>(debounce);
+  debounce = <span class="fn">setTimeout</span>(tryInject, <span class="num">300</span>);  <span class="cm">// ← debounced, not immediate</span>
+});
+observer.<span class="fn">observe</span>(body, { childList: <span class="kw">true</span>, subtree: <span class="kw">false</span> }); <span class="cm">// ← subtree FALSE</span></div>
+
+  <div class="ibox warn">
+    <div class="ibox-icon">⚠️</div>
+    <div>If you ever modify an injector, <strong>do not change <code>subtree: false</code> to <code>subtree: true</code></strong> without also having the inProgress lock and debounce. React apps on Meta/Gemini will instantly reintroduce the flicker bug.</div>
+  </div>
+</div>
+
+<!-- HAR Analysis -->
+<div class="section" id="har-analysis">
+  <h2><span class="sec-num">10</span> Deep Dive — HAR File Analysis</h2>
+
+  <p>When guessing at DOM selectors stopped working, we recorded HAR (HTTP Archive) files from the AI platforms and analysed the JavaScript bundles and telemetry payloads inside them.</p>
+
+  <h3>What We Found for Meta AI</h3>
+  <p>Meta's Vercel Speed Insights telemetry in the HAR contained this payload:</p>
+
+  <div class="code-block">{
+  "type": "FID",
+  "attribution": {
+    "eventTarget": <span class="str">"input.text-subheadline.placeholder:text-text-tertiary.min-w-0.flex-1.bg-transparent.px-2.py-3.outline-none"</span>,
+    "eventType": <span class="str">"keydown"</span>
+  }
+}</div>
+
+  <p>This revealed that Meta AI's chat input was a plain <code>&lt;input&gt;</code> element, not a <code>contenteditable</code> div. Every previous injection approach — Lexical <code>beforeinput</code> events, ClipboardEvent paste, contenteditable manipulation — was targeting the wrong element type entirely.</p>
+
+  <h3>What We Found for Gemini</h3>
+  <p>Gemini's minified Angular bundle revealed that the send button is rendered by an Angular component with no stable <code>data-test-id</code> or <code>aria-label</code> in the chat UI. The submit handler was a minified method <code>b.Gj()</code> bound via Angular's click binding — impossible to call directly. The only reliable approach was structural DOM walking from the editor element upward to find the send button by proximity.</p>
+
+  <h3>How to Capture a HAR File</h3>
+  <div class="code-block"><span class="cm">1. Open Chrome DevTools (F12)</span>
+<span class="cm">2. Go to Network tab</span>
+<span class="cm">3. Check "Preserve log"</span>
+<span class="cm">4. Navigate to the AI platform and interact with it</span>
+<span class="cm">5. Right-click any request → "Save all as HAR with content"</span>
+<span class="cm">6. Analyse with Python:</span>
+
+<span class="kw">import</span> json, re
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"platform.har"</span>, <span class="str">"r"</span>, errors=<span class="str">"replace"</span>) <span class="kw">as</span> f:
+    content = f.read()
+
+<span class="cm"># Search for editor/button selectors</span>
+matches = re.<span class="fn">findall</span>(<span class="str">r'aria-label[^"]{0,5}"[^"]{0,40}[Ss]end[^"]{0,40}"'</span>, content)
+<span class="fn">print</span>(matches)</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Known Issues -->
+<div class="section" id="known-issues">
+  <h2><span class="sec-num">11</span> Known Issues &amp; Limitations</h2>
+
+  <table>
+    <tr><th>Issue</th><th>Severity</th><th>Notes</th></tr>
+    <tr><td>Gemini and Meta AI not in platform selector</td><td><span class="badge b-blue">BY DESIGN</span></td><td>Both platforms hidden from UI as of v1.0.1 due to injection instability. Injector code preserved. Re-enable when selectors are updated — see §03b</td></tr>
+    <tr><td>Gemini auto-submit can miss on slow connections</td><td><span class="badge b-amber">MINOR</span></td><td>Angular needs time to process input events and enable the send button. 1800ms delay usually sufficient but may fail on very slow connections. Text is still injected; user just needs to press Enter manually</td></tr>
+    <tr><td>Meta AI conversation view vs home page</td><td><span class="badge b-amber">MINOR</span></td><td>Home page uses <code>&lt;input&gt;</code>, conversation uses <code>&lt;textarea&gt;</code>. Injector handles both but always redirects to home (<code>meta.ai</code>) — conversation URL not supported</td></tr>
+    <tr><td>AI platform UI updates break injection</td><td><span class="badge b-red">EXPECTED</span></td><td>All platforms update their UIs frequently. Selectors may need updating. Monitor after major platform releases</td></tr>
+    <tr><td>Chrome native PDF viewer</td><td><span class="badge b-blue">BY DESIGN</span></td><td>Content scripts cannot inject into Chrome's native PDF viewer. Works on web-based PDF viewers</td></tr>
+    <tr><td>Enterprise/CSP-restricted sites</td><td><span class="badge b-blue">BY DESIGN</span></td><td>Sites with strict Content Security Policy may block the extension's content script injection</td></tr>
+    <tr><td>Shadow DOM position fixed on zoomed pages</td><td><span class="badge b-amber">MINOR</span></td><td>At very high browser zoom levels, the FAB position can drift slightly. Dragging repositions it</td></tr>
+  </table>
+</div>
+
+<!-- Future Work -->
+<div class="section" id="future-work">
+  <h2><span class="sec-num">12</span> Future Work &amp; Enhancement Ideas</h2>
+
+  <table>
+    <tr><th>Feature</th><th>Priority</th><th>Notes</th></tr>
+    <tr><td>Edit custom prompts (not just add/delete)</td><td><span class="badge b-amber">MEDIUM</span></td><td>ID field <code>editingId</code> already exists in popup.js — just needs UI wiring</td></tr>
+    <tr><td>Per-platform inject URL (conversation vs home)</td><td><span class="badge b-amber">MEDIUM</span></td><td>Allow opening in existing conversation or specific model variant</td></tr>
+    <tr><td>History of recent sends</td><td><span class="badge b-blue">LOW</span></td><td>Last N prompts sent, stored in chrome.storage.local</td></tr>
+    <tr><td>Prompt variables / placeholders</td><td><span class="badge b-blue">LOW</span></td><td>e.g. <code>{{language}}</code> in prompt body — prompt dialog on send</td></tr>
+    <tr><td>Keyboard shortcut to open widget</td><td><span class="badge b-amber">MEDIUM</span></td><td>Use <code>chrome.commands</code> API in manifest</td></tr>
+    <tr><td>Export/import custom prompts</td><td><span class="badge b-blue">LOW</span></td><td>JSON download/upload for backup and sharing</td></tr>
+    <tr><td>Chrome Web Store submission</td><td><span class="badge b-amber">MEDIUM</span></td><td>Requires privacy policy, store listing, icon set at correct sizes</td></tr>
+  </table>
+</div>
+
+<!-- File Reference -->
+<div class="section" id="files-ref">
+  <h2><span class="sec-num">13</span> File Reference</h2>
+
+  <h3>If you need to update platform selectors</h3>
+  <table>
+    <tr><th>Platform</th><th>File</th><th>Key Functions</th></tr>
+    <tr><td>Claude</td><td><code>injectors/claude.js</code></td><td><code>findEditor()</code> — ProseMirror selectors<br><code>findSendButton()</code> — aria-label "Send Message"</td></tr>
+    <tr><td>ChatGPT</td><td><code>injectors/chatgpt.js</code></td><td><code>findEditor()</code> — <code>#prompt-textarea</code><br><code>findSendButton()</code> — <code>data-testid="send-button"</code></td></tr>
+    <tr><td>Gemini</td><td><code>injectors/gemini.js</code></td><td><code>findEditor()</code> — <code>rich-textarea .ql-editor</code><br><code>findSendButton()</code> — structural DOM walk from editor</td></tr>
+    <tr><td>Meta AI</td><td><code>injectors/meta.js</code></td><td><code>findInputField()</code> — <code>input.text-subheadline</code>, <code>textarea[class*='resize-none']</code></td></tr>
+    <tr><td>Grok</td><td><code>injectors/grok.js</code></td><td><code>findEditor()</code> — <code>textarea[placeholder*='Ask']</code></td></tr>
+  </table>
+
+  <h3>If you need to add a new AI platform</h3>
+  <div class="code-block"><span class="cm">// 1. Add to background.js:</span>
+<span class="kw">const</span> AI_PLATFORMS = {
+  newai: { name: <span class="str">"New AI"</span>, url: <span class="str">"https://newai.com/chat"</span> }
+};
+
+<span class="cm">// 2. Add to manifest.json content_scripts:</span>
+{ matches: [<span class="str">"https://newai.com/*"</span>], js: [<span class="str">"injectors/newai.js"</span>], run_at: <span class="str">"document_idle"</span> }
+
+<span class="cm">// 3. Create injectors/newai.js using this template:</span>
+<span class="cm">// - Copy any existing injector as base</span>
+<span class="cm">// - Change: PENDING_KEY provider check to "newai"</span>
+<span class="cm">// - Change: findEditor() selectors for the new platform</span>
+<span class="cm">// - Change: injectText() method appropriate to editor type</span>
+<span class="cm">// - Change: findSendButton() / submitForm() selectors</span>
+
+<span class="cm">// 4. Add to PROVIDERS in content.js and popup/popup.js
+<span class="cm">// NOTE: Gemini and Meta AI entries intentionally absent from PROVIDERS[] as of v1.0.1</span>
+<span class="cm">// Their injector files exist — only the UI entries were removed. See §03b to re-enable.</span></span>
+{ id: <span class="str">"newai"</span>, name: <span class="str">"New AI"</span>, svg: <span class="str">`&lt;svg...&gt;`</span> }</div>
+
+  <h3>If the widget layout needs changing</h3>
+  <p>All widget CSS is inside the <code>WIDGET_CSS</code> constant string at the top of <code>content.js</code>. Panel HTML is in <code>buildPanel()</code>. Event wiring is in <code>wirePanel()</code>. Keep CSS and HTML changes together — they're tightly coupled.</p>
+
+  <div class="ibox note">
+    <div class="ibox-icon">ℹ️</div>
+    <div>There is also a <code>widget.css</code> file in the extension folder — this is a legacy artefact and is no longer loaded. All active widget styles are in <code>content.js</code> (Shadow DOM inline). Do not edit <code>widget.css</code>.</div>
+  </div>
+</div>
+
+<!-- Onboarding Checklist -->
+<div class="section" id="checklist">
+  <h2><span class="sec-num">14</span> New Developer Onboarding Checklist</h2>
+
+  <h3>Environment Setup</h3>
+  <table>
+    <tr><th>#</th><th>Task</th><th>Notes</th></tr>
+    <tr><td>1</td><td>Load extension unpacked in Chrome Developer Mode</td><td><code>chrome://extensions/</code> → Load unpacked → select folder with manifest.json</td></tr>
+    <tr><td>2</td><td>Log into active AI platforms in Chrome</td><td>Claude, ChatGPT, Grok — required for injection testing. Gemini + Meta AI hidden from UI (v1.0.1); log in only if testing those injectors</td></tr>
+    <tr><td>3</td><td>Pin the extension in Chrome toolbar</td><td>Puzzle icon → pin AI Context Bridge</td></tr>
+    <tr><td>4</td><td>Open DevTools on a test page</td><td>Inspect the <code>#aicb-host</code> element → expand <code>#shadow-root</code> to see widget elements</td></tr>
+    <tr><td>5</td><td>Open DevTools → Application → Storage → Local Storage</td><td>Verify <code>settings</code> and <code>customPrompts</code> keys exist after opening popup</td></tr>
+  </table>
+
+  <h3>After Making Any Code Change</h3>
+  <table>
+    <tr><th>#</th><th>Task</th></tr>
+    <tr><td>1</td><td>Go to <code>chrome://extensions/</code> → click the ↺ reload button on AI Context Bridge</td></tr>
+    <tr><td>2</td><td>Reload any test tabs (content script changes require page reload)</td></tr>
+    <tr><td>3</td><td>For injector changes: test on the specific platform in a fresh conversation</td></tr>
+    <tr><td>4</td><td>For popup changes: close and reopen the popup</td></tr>
+    <tr><td>5</td><td>Check DevTools console for errors on both the test page and the AI platform tab</td></tr>
+  </table>
+
+  <h3>Key Things to Know Before Touching Injectors</h3>
+
+  <div class="ibox danger">
+    <div class="ibox-icon">🚨</div>
+    <div><strong>Never</strong> change <code>MutationObserver subtree: false</code> to <code>subtree: true</code> without the <code>inProgress</code> lock + debounce. React platforms will instantly get the flicker bug back.</div>
+  </div>
+
+  <div class="ibox danger">
+    <div class="ibox-icon">🚨</div>
+    <div><strong>Never</strong> use <code>document.execCommand("selectAll")</code> inside an injector. It selects the entire page, not just the editor. Use <code>range.selectNodeContents(editor)</code> instead.</div>
+  </div>
+
+  <div class="ibox warn">
+    <div class="ibox-icon">⚠️</div>
+    <div>The <code>autoSubmit</code> flag must be passed through <code>pendingPrompt</code> in <code>background.js → storeAndOpen()</code>. If you reset or rewrite that function, ensure <code>autoSubmit</code> is always included.</div>
+  </div>
+
+  <div class="ibox tip">
+    <div class="ibox-icon">💡</div>
+    <div>When a platform's injection breaks, first check the HAR. Record a new HAR from that platform and search for <code>contenteditable</code>, <code>aria-label.*[Ss]end</code>, and <code>data-test-id</code>. This reveals the actual DOM selectors faster than guessing.</div>
+  </div>
+
+  <div style="margin-top:40px; padding:20px; background: var(--surface); border: 1px solid var(--border2); border-radius:12px; text-align:center;">
+    <div style="font-family:var(--display); font-size:16px; font-weight:800; color:var(--text); margin-bottom:8px;">Document complete. Good luck! ⚡</div>
+    <div style="font-size:12px; color:var(--text-dim); font-family:var(--mono);">
+      Built by <a href="https://techwithmamatva.blogspot.com/" target="_blank" style="color:var(--accent);">Mamatva</a> · AI Context Bridge v1.0.0 · 22.04.2025
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const sections = document.querySelectorAll('[id]');
+const navItems = document.querySelectorAll('.nav-item');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(n => n.classList.toggle('active', n.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+sections.forEach(s => io.observe(s));
+</script>
+</body>
+</html>
