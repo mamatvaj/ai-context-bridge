@@ -5,8 +5,7 @@
 **Version:** 1.20 · **Updated:** 29.03.2026  
 **Author:** [Mamatva](https://techwithmamatva.blogspot.com/) · [techwithmamatva.blogspot.com](https://techwithmamatva.blogspot.com/)
 
-
-<img width="2222" height="1920" alt="Gemini_Generated_Image_dh9cp9dh9cp9dh9c" src="https://github.com/user-attachments/assets/1c99627c-6199-42f6-8bac-f8ced5ad8ec2" />
+<img width="2224" height="1920" alt="Gemini_Generated_Image_lpq6x9lpq6x9lpq6" src="https://github.com/user-attachments/assets/c5102a49-9582-4791-b2d3-5123780a9765" />
 
 
 ---
